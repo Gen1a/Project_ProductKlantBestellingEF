@@ -7,6 +7,11 @@ namespace KlantBestellingen.WPF
     /// </summary>
     public partial class App : Application
     {
+        private App()
+        {
+            // Initialize App with dummy data
+            Context.Populate();
+        }
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             MessageBox.Show("Er is een onverwachte fout opgetreden: "

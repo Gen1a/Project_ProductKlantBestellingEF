@@ -52,7 +52,7 @@ namespace KlantBestellingen.WPF
         }
 
         /// <summary>
-        /// Close the application when the Main window gets closed
+        /// Close the application when the Main window gets closed.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -62,7 +62,7 @@ namespace KlantBestellingen.WPF
         }
 
         /// <summary>
-        /// Opens the 'Klanten' window
+        /// Opens the 'Klanten' window.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -73,7 +73,7 @@ namespace KlantBestellingen.WPF
         }
 
         /// <summary>
-        /// Opens the 'Producten' window
+        /// Opens the 'Producten' window.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -84,7 +84,7 @@ namespace KlantBestellingen.WPF
         }
 
         /// <summary>
-        /// Closes the application when clicked
+        /// Closes the application when clicked.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
