@@ -37,6 +37,12 @@
                             <Image Source="/KlantBestellingen.WPF;component/Images/product.png" />
                         </MenuItem.Icon>
                     </MenuItem>
+                    <Separator />
+                    <MenuItem Header="_Bestellingdetail">
+                        <MenuItem.Icon>
+                            <Image Source="/KlantBestellingen.WPF;component/Images/order.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </MenuItem>
             </Menu>
         </DockPanel>

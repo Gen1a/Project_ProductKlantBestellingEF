@@ -79,8 +79,8 @@ namespace KlantBestellingen.WPF
         /// <param name="e"></param>
         private void MenuItem_Producten_Click(object sender, RoutedEventArgs e)
         {
-            if (_customerWindow != null)
-                _customerWindow.Show();
+            if (_productsWindow != null)
+                _productsWindow.Show();
         }
 
         /// <summary>
