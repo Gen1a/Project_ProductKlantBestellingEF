@@ -4,11 +4,10 @@ using System.Collections.Generic;
 
 namespace BusinessLayer.Models
 {
-    public class Klant
+    public class Klant : Observable
     {
         #region Fields
-        // Lijst van bestellingen voor klant
-        private List<Bestelling> _bestellingen;
+        private List<Bestelling> _bestellingen; // Lijst van bestellingen voor klant
         private string _naam;
         private string _adres;
         private int _klantId;
@@ -54,6 +53,7 @@ namespace BusinessLayer.Models
             {
                 if (String.IsNullOrWhiteSpace(value)) throw new KlantException("Naam mag niet leeg zijn");
                 _naam = value;
+                NotifyPropertyChanged("Naam");
             }
         }
         public string Adres {
@@ -62,6 +62,7 @@ namespace BusinessLayer.Models
             {
                 if (String.IsNullOrWhiteSpace(value)) throw new KlantException("Adres mag niet leeg zijn");
                 _adres = value;
+                NotifyPropertyChanged("Adres");
             }
         }
 
