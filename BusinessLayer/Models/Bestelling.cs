@@ -82,7 +82,7 @@ namespace BusinessLayer.Models
         #endregion
 
         #region Methods
-        private decimal BerekenKostprijs()
+        public decimal BerekenKostprijs()
         {
             double korting;
             decimal prijs = 0.0m;
