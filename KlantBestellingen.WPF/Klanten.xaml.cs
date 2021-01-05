@@ -80,10 +80,16 @@ namespace KlantBestellingen.WPF
                 MessageBox.Show("Geef alle klantgegevens op!");
                 return;
             }
+
             // Add new Klant to ObservableCollection
             // _klanten_CollectionChanged makes sure the changes also get pushed to BusinessLayer
             Klant klant = new Klant(TbKlantNaam.Text, TbKlantAdres.Text);
             _klanten.Add(klant);
+
+            // Empty TextBoxes after adding new Klant
+            TbKlantNaam.Text = "";
+            TbKlantAdres.Text = "";
+            BtnNieuweKlant.IsEnabled = false;
         }
 
         private void Tb_KeyUp(object sender, KeyEventArgs e)
