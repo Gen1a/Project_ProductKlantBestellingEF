@@ -3,6 +3,7 @@ using BusinessLayer.Managers;
 using BusinessLayer.Models;
 using BusinessLayer.Factories;
 using System;
+using System.Windows.Threading;
 
 namespace KlantBestellingen.WPF
 {
@@ -17,7 +18,6 @@ namespace KlantBestellingen.WPF
         // Method which populates Managers with dummy data
         public static void Populate()
         {
-
             // Test code: moet weg indien db opgevuld
             KlantManager.VoegKlantToe(KlantFactory.MaakKlant("klant 1", "adres 1", IdFactory));
             KlantManager.VoegKlantToe(KlantFactory.MaakKlant("klant 2", "adres 2", IdFactory));
@@ -38,14 +38,26 @@ namespace KlantBestellingen.WPF
             //}
 
 
-
-            //Test code: we initialiseren een timer die elke 10 seconden het adres aanpast -alsof dit op de business layer gebeurt
-            // ----------
+            //// TIMER TEST: we initialiseren een timer die elke 10 seconden het adres aanpast -alsof dit op de business layer gebeurt
+            //// ----------
             //_timer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(10) }; // timer loopt af om de 10 seconden
             //_timer.Tick += _timer_Tick; // voer method uit wanner timer afloopt
             //_timer.Start();
         }
+
+        //// TIMER TEST
+        //private static DispatcherTimer _timer;
+        //private static int _counter = 0;
+        //private static void _timer_Tick(object sender, EventArgs e)
+        //{
+        //    // We passen aan op de business layer, maar owv INotify... volgt WPF de aanpassingen
+        //    foreach (var klant in KlantManager.GeefKlanten())
+        //    {
+        //        ++_counter;
+        //        klant.Adres = klant.Adres + _counter.ToString();
+        //    }
+        //}
     }
 
-    
+
 }

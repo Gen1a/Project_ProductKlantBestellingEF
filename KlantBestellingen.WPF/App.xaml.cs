@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using KlantBestellingen.WPF.Languages;
+using System.Windows;
 
 namespace KlantBestellingen.WPF
 {
@@ -11,6 +12,9 @@ namespace KlantBestellingen.WPF
         {
             // Initialize App with dummy data
             Context.Populate();
+            //
+            //Translations.Culture = new System.Globalization.CultureInfo("nl-BE");
+            Translations.Culture = new System.Globalization.CultureInfo("en-US");
         }
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {

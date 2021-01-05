@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KlantBestellingen.WPF"
+        xmlns:languages="clr-namespace:KlantBestellingen.WPF.Languages"
         mc:Ignorable="d"
         Title="Klanten" Height="450" Width="800">
     <Grid>
@@ -21,9 +22,9 @@
                   CanUserAddRows="False" CanUserDeleteRows="True" AlternatingRowBackground="#FFB9BBFF" IsReadOnly="True"
                   PreviewKeyDown="dgKlanten_PreviewKeyDown">
             <DataGrid.Columns>
-                <!-- Bind Klant properties to column -->
-                <DataGridTextColumn Header="Naam" Binding="{Binding Naam}" MinWidth="200"></DataGridTextColumn>
-                <DataGridTextColumn Header="Adres" Binding="{Binding Adres}" MinWidth="200"></DataGridTextColumn>
+                <!-- Get column header translation + bind Klant properties to column -->
+                <DataGridTextColumn Header="{x:Static languages:Translations.Name}" Binding="{Binding Naam}" MinWidth="200"></DataGridTextColumn>
+                <DataGridTextColumn Header="{x:Static languages:Translations.Address}" Binding="{Binding Adres}" MinWidth="200"></DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
         <!-- SECOND ROW -->
@@ -38,13 +39,13 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,15,0" Background="Black" Foreground="#FFD4D4D4" Padding="5,0,5,0"><Bold>Nieuwe Klant</Bold></TextBlock>
-            <TextBlock Text="Naam" Grid.Row="0" Grid.Column="1" Margin="0,0,5,0"/>
+            <TextBlock Text="{x:Static languages:Translations.NewClientTag}" Grid.Row="0" Grid.Column="0" Margin="0,0,15,0" Background="Black" Foreground="#FFD4D4D4" Padding="5,0,5,0"></TextBlock>
+            <TextBlock Text="{x:Static languages:Translations.NameTag}" Grid.Row="0" Grid.Column="1" Margin="0,0,5,0"/>
             <TextBox x:Name="TbKlantNaam" Grid.Row="0" Grid.Column="2" MinWidth="150" Margin="0,0,10,0" KeyUp="Tb_KeyUp"/>
-            <TextBlock Text="Adres" Grid.Row="0" Grid.Column="3" Margin="0,0,5,0"/>
+            <TextBlock Text="{x:Static languages:Translations.AddressTag}" Grid.Row="0" Grid.Column="3" Margin="0,0,5,0"/>
             <TextBox x:Name="TbKlantAdres" Grid.Row="0" Grid.Column="4" MinWidth="300" KeyUp="Tb_KeyUp"/>
         </Grid>
-        <Button x:Name="BtnNieuweKlant" Grid.Row="1" Grid.Column="1" Margin="5" Content="Voeg toe" HorizontalAlignment="Right" 
+        <Button x:Name="BtnNieuweKlant" Grid.Row="1" Grid.Column="1" Margin="5" Content="{x:Static languages:Translations.Add}" HorizontalAlignment="Right" 
                 VerticalAlignment="Center" Width="100" Click="BtnNieuweKlant_Click" IsEnabled="False"/>
     </Grid>
 </Window>
