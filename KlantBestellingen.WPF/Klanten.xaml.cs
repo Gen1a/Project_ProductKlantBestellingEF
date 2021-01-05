@@ -13,6 +13,7 @@ namespace KlantBestellingen.WPF
     public partial class Klanten : Window
     {
         private ObservableCollection<Klant> _klanten;
+
         public Klanten()
         {
             InitializeComponent();
@@ -72,6 +73,11 @@ namespace KlantBestellingen.WPF
             }
         }
 
+        /// <summary>
+        /// Handles clicking on the 'Voeg toe' button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnNieuweKlant_Click(object sender, RoutedEventArgs e)
         {
             // Validate data
@@ -91,7 +97,12 @@ namespace KlantBestellingen.WPF
             TbKlantAdres.Text = "";
             BtnNieuweKlant.IsEnabled = false;
         }
-
+        
+        /// <summary>
+        /// Handles input (KeyUp) in the TextBox fields.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Tb_KeyUp(object sender, KeyEventArgs e)
         {
             // If input not empty enable Voeg Toe button
