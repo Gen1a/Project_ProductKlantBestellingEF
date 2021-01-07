@@ -4,8 +4,8 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # Own addition
-bin
-obj
+[Bb]in/
+[Oo]bj/
 
 # User-specific files
 *.rsuser
