@@ -3,7 +3,6 @@ C:\Users\frede\source\repos\Graduaat\Programmeren\ProductKlantBestelling\Busines
 C:\Users\frede\source\repos\Graduaat\Programmeren\ProductKlantBestelling\BusinessLayer\bin\Debug\netcoreapp3.1\BusinessLayer.pdb
 C:\Users\frede\source\repos\Graduaat\Programmeren\ProductKlantBestelling\BusinessLayer\obj\Debug\netcoreapp3.1\BusinessLayer.AssemblyInfoInputs.cache
 C:\Users\frede\source\repos\Graduaat\Programmeren\ProductKlantBestelling\BusinessLayer\obj\Debug\netcoreapp3.1\BusinessLayer.AssemblyInfo.cs
-C:\Users\frede\source\repos\Graduaat\Programmeren\ProductKlantBestelling\BusinessLayer\obj\Debug\netcoreapp3.1\BusinessLayer.csproj.CoreCompileInputs.cache
 C:\Users\frede\source\repos\Graduaat\Programmeren\ProductKlantBestelling\BusinessLayer\obj\Debug\netcoreapp3.1\BusinessLayer.dll
 C:\Users\frede\source\repos\Graduaat\Programmeren\ProductKlantBestelling\BusinessLayer\obj\Debug\netcoreapp3.1\BusinessLayer.pdb
 C:\Users\frede\source\repos\Graduaat\Programmeren\ProductKlantBestelling\BusinessLayer\obj\Debug\netcoreapp3.1\BusinessLayer.csprojAssemblyReference.cache
