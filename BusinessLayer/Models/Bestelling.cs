@@ -8,25 +8,25 @@ namespace BusinessLayer.Models
     {
         #region Fields
         private Dictionary<Product, int> _producten;
-        private int _bestellingId;
+        private long _bestellingId;
         private bool _betaald;
         private Klant _klant;
         private DateTime _datum;
         #endregion
 
         #region Constructors
-        public Bestelling(int id, DateTime datum)
+        public Bestelling(long id, DateTime datum)
         {
             _producten = new Dictionary<Product, int>();
             Betaald = false;
             BestellingId = id;
             Datum = datum;
         }
-        public Bestelling(int id, DateTime datum, Klant klant) : this(id, datum)
+        public Bestelling(long id, DateTime datum, Klant klant) : this(id, datum)
         {
             Klant = klant;
         }
-        public Bestelling(int id, DateTime datum, Klant klant, Dictionary<Product, int> producten) : this(id, datum, klant)
+        public Bestelling(long id, DateTime datum, Klant klant, Dictionary<Product, int> producten) : this(id, datum, klant)
         {
             if (producten == null) throw new BestellingException("Collectie producten mag niet leeg zijn");
             _producten = producten;
@@ -34,7 +34,7 @@ namespace BusinessLayer.Models
         #endregion
 
         #region Properties
-        public int BestellingId     // unique identifier
+        public long BestellingId     // unique identifier
         {   
             get => _bestellingId;
             set {

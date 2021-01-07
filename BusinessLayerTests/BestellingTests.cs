@@ -12,7 +12,7 @@ namespace BusinessLayerTests
         [TestMethod]
         public void MaakBestellingIdEnDatumValid()
         {
-            int id = 1;
+            long id = 1;
             DateTime datum = new DateTime(2020, 1, 1);
             Bestelling actual = new Bestelling(id, datum);
             bool expectedBetaald = false;
@@ -24,7 +24,7 @@ namespace BusinessLayerTests
         [TestMethod]
         public void MaakBestellingIdDatumKlantValid()
         {
-            int id = 1;
+            long id = 1;
             DateTime datum = new DateTime(2020, 1, 1);
             Klant klant = new Klant("Piet", "Kerkstraat 10, 9000 Gent");
             Bestelling actual = new Bestelling(id, datum, klant);

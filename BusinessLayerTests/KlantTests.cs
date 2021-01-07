@@ -24,7 +24,7 @@ namespace BusinessLayerTests
         {
             string naam = "Piet";
             string adres = "Kerkstraat 10, 9000 Gent";
-            int id = 1;
+            long id = 1;
             Klant actual = new Klant(naam, adres, id);
             Assert.AreEqual(naam, actual.Naam);
             Assert.AreEqual(adres, actual.Adres);
@@ -36,8 +36,8 @@ namespace BusinessLayerTests
         {
             string naam = "Piet";
             string adres = "Kerkstraat 10, 9000 Gent";
-            int id = 1;
-            int bestellingId = 1;
+            long id = 1;
+            long bestellingId = 1;
             DateTime datum = new DateTime(2020, 1, 1);
             Bestelling bestelling = new Bestelling(bestellingId, datum);
             List<Bestelling> bestellingen = new List<Bestelling> { bestelling };

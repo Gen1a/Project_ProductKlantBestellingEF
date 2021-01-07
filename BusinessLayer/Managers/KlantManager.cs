@@ -8,7 +8,7 @@ namespace BusinessLayer.Managers
 {
     public class KlantManager
     {
-        private Dictionary<int, Klant> _klanten = new Dictionary<int, Klant>();
+        private Dictionary<long, Klant> _klanten = new Dictionary<long, Klant>();
         public IReadOnlyList<Klant> GeefKlanten()
         {
             return new List<Klant>(_klanten.Values).AsReadOnly();

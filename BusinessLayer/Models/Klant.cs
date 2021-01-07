@@ -10,7 +10,7 @@ namespace BusinessLayer.Models
         private List<Bestelling> _bestellingen; // Lijst van bestellingen voor klant
         private string _naam;
         private string _adres;
-        private int _klantId;
+        private long _klantId;
         #endregion
 
         #region Constructors
@@ -20,11 +20,11 @@ namespace BusinessLayer.Models
             Naam = naam;
             Adres = adres;
         }
-        public Klant(string naam, string adres, int klantId) : this(naam, adres)
+        public Klant(string naam, string adres, long klantId) : this(naam, adres)
         {
             KlantId = klantId;
         }
-        public Klant(string naam, string adres, int klantId, List<Bestelling> bestellingen) : this(naam, adres, klantId)
+        public Klant(string naam, string adres, long klantId, List<Bestelling> bestellingen) : this(naam, adres, klantId)
         {
             if (bestellingen == null) throw new KlantException("Collectie bestellingen mag niet leeg zijn.");
             _bestellingen = bestellingen;
@@ -37,7 +37,7 @@ namespace BusinessLayer.Models
 
         #region Properties
         // Klant Id nodig om referentie te behouden bij wijzigen van vb. naam
-        public int KlantId
+        public long KlantId
         {
             get => _klantId;
             set

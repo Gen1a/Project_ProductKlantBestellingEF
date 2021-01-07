@@ -8,7 +8,7 @@ namespace BusinessLayer.Managers
 {
     public class BestellingManager
     {
-        private Dictionary<int, Bestelling> _bestellingen = new Dictionary<int, Bestelling>();
+        private Dictionary<long, Bestelling> _bestellingen = new Dictionary<long, Bestelling>();
         public IReadOnlyList<Bestelling> GeefBestellingen()
         {
             return new List<Bestelling>(_bestellingen.Values).AsReadOnly();
