@@ -8,7 +8,7 @@ namespace BusinessLayer.Models
         #region Fields
         private string _name;   // geen auto-implemented property => backing field nodig
         private decimal _prijs;
-        private int _productId;
+        private long _productId;
         #endregion
         #region Constructors
         public Product(string naam)
@@ -19,7 +19,7 @@ namespace BusinessLayer.Models
         {
             Prijs = prijs;
         }
-        public Product(string naam, decimal prijs, int id) : this(naam, prijs)
+        public Product(string naam, decimal prijs, long id) : this(naam, prijs)
         {
             ProductId = id;
         }
@@ -49,7 +49,7 @@ namespace BusinessLayer.Models
             }
         }
         // Product Id nodig om referentie te behouden bij wijzigen van naam
-        public int ProductId
+        public long ProductId
         {
             get => _productId;
             set

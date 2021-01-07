@@ -14,7 +14,7 @@ namespace BusinessLayerTests
             Product actual = new Product(naam);
             Assert.AreEqual(naam, actual.Naam);
             Assert.AreEqual(default(decimal), actual.Prijs);
-            Assert.AreEqual(default(int), actual.ProductId);
+            Assert.AreEqual(default(long), actual.ProductId);
         }
         [TestMethod]
         public void MaakProductNaamPrijsValide()
@@ -24,14 +24,14 @@ namespace BusinessLayerTests
             Product actual = new Product(naam, prijs);
             Assert.AreEqual(naam, actual.Naam);
             Assert.AreEqual(prijs, actual.Prijs);
-            Assert.AreEqual(default(int), actual.ProductId);
+            Assert.AreEqual(default(long), actual.ProductId);
         }
         [TestMethod]
         public void MaakProductNaamPrijsProductIdValide()
         {
             string naam = "Item";
             decimal prijs = 10m;
-            int id = 1;
+            long id = 1;
             Product actual = new Product(naam, prijs, id);
             Assert.AreEqual(naam, actual.Naam);
             Assert.AreEqual(prijs, actual.Prijs);
@@ -112,8 +112,8 @@ namespace BusinessLayerTests
         {
             string naam = "Item";
             decimal prijs = 10m;
-            int productId = 2;
-            int newProductId = 0;
+            long productId = 2;
+            long newProductId = 0;
             Product actual = new Product(naam, prijs, productId);
             actual.ProductId = newProductId;
         }

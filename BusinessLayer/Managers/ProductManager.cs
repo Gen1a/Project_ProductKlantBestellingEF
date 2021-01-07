@@ -54,7 +54,7 @@ namespace BusinessLayer.Managers
                 return _producten[naam];
             }
         }
-        public Product GeefProduct(int productId)
+        public Product GeefProduct(long productId)
         {
             if (!_producten.Values.Any(x => x.ProductId == productId))
             {
