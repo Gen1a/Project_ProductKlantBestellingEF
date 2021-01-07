@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].Product
+(
+	[Id] BIGINT NOT NULL PRIMARY KEY IDENTITY, 
+    [Naam] NVARCHAR(100) NOT NULL , 
+    [Prijs] DECIMAL NOT NULL
+)
