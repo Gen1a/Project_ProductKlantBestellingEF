@@ -20,11 +20,11 @@ namespace BusinessLayer.Models
             Naam = naam;
             Adres = adres;
         }
-        public Klant(string naam, string adres, long klantId) : this(naam, adres)
+        internal Klant(string naam, string adres, long klantId) : this(naam, adres)
         {
             KlantId = klantId;
         }
-        public Klant(string naam, string adres, long klantId, List<Bestelling> bestellingen) : this(naam, adres, klantId)
+        internal Klant(string naam, string adres, long klantId, List<Bestelling> bestellingen) : this(naam, adres, klantId)
         {
             if (bestellingen == null) throw new KlantException("Collectie bestellingen mag niet leeg zijn.");
             _bestellingen = bestellingen;
@@ -112,7 +112,7 @@ namespace BusinessLayer.Models
         }
         public override string ToString()
         {
-            return $"[Klant] {KlantId}, {Naam}, {Adres}, {_bestellingen.Count}";
+            return $"[Klant] Id: {KlantId}, Naam: {Naam}, Adres: {Adres}, Bestellingen: {_bestellingen.Count}";
         }
         public void Show()
         {
