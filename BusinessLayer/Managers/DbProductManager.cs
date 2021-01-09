@@ -1,14 +1,35 @@
-﻿using BusinessLayer.Interfaces;
+﻿using BusinessLayer.Exceptions;
+using BusinessLayer.Interfaces;
 using BusinessLayer.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Data.SqlClient;
 
 namespace BusinessLayer.Managers
 {
-    class DbProductManager : IDbManager<Product>
+    public class DbProductManager : IDbManager<Product>
     {
+        // readonly possible if instance constructor of the class contains the instance field declaration
+        private readonly string connectionString;
+
+        public DbProductManager(string connection)
+        {
+            if (string.IsNullOrEmpty(connection))
+            {
+                throw new DbProductManagerException("Fout bij het aanmaken van DbProductManager: connectionstring moet ingevuld zijn");
+            }
+            this.connectionString = connection;
+        }
+        private SqlConnection GetConnection()
+        {
+            return new SqlConnection(connectionString);
+        }
+
         public IReadOnlyList<Product> HaalOp()
+        {
+            throw new NotImplementedException();
+        }
+        public Product HaalOp(long id)
         {
             throw new NotImplementedException();
         }
@@ -18,10 +39,6 @@ namespace BusinessLayer.Managers
             throw new NotImplementedException();
         }
 
-        public Product HaalOp(long id)
-        {
-            throw new NotImplementedException();
-        }
 
         public void Verwijder(Product item)
         {
