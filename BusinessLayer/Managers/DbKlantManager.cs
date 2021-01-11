@@ -23,6 +23,23 @@ namespace BusinessLayer.Managers
             this.connectionString = connection;
         }
 
+        public Klant MaakNieuweKlant(string naam, string adres)
+        {
+            if (string.IsNullOrEmpty(naam)) throw new DbKlantManagerException("DbKlantManager: Naam van een klant mag niet leeg zijn");
+            if (string.IsNullOrEmpty(adres)) throw new DbKlantManagerException("DbKlantManager: Adres van een klant mag niet leeg zijn");
+            
+            return new Klant(naam, adres);
+        }
+
+        public Klant MaakNieuweKlant(string naam, string adres, long id)
+        {
+            if (id < 0) throw new DbKlantManagerException("DbKlantManager: Id van klant is invalide");
+            Klant k = MaakNieuweKlant(naam, adres);
+            k.KlantId = id;
+
+            return k;
+        }
+
         private SqlConnection GetConnection()
         {
             SqlConnection connection;
@@ -54,7 +71,7 @@ namespace BusinessLayer.Managers
                     List<Klant> klanten = new List<Klant>();
                     while (reader.Read())
                     {
-                        klanten.Add(new Klant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]));
+                        klanten.Add(MaakNieuweKlant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]));
                     }
                     reader.Close();
                     return klanten;
@@ -62,7 +79,7 @@ namespace BusinessLayer.Managers
                 catch (Exception e)
                 {
                     Console.WriteLine($"Error: ${e.Message}");
-                    return null;
+                    throw new DbKlantManagerException("DbKlantManager: Fout bij ophalen van klanten uit database");
                 }
                 finally
                 {
@@ -79,7 +96,7 @@ namespace BusinessLayer.Managers
             }
 
             SqlConnection connection = GetConnection();
-            string query = "SELECT * FROM Klant WHERE id=@id";
+            string query = "SELECT * FROM Klant WHERE Id=@id";
 
             using (SqlCommand command = connection.CreateCommand())
             {
@@ -92,14 +109,14 @@ namespace BusinessLayer.Managers
                 {
                     SqlDataReader reader = command.ExecuteReader();
                     reader.Read();
-                    Klant klant = new Klant((string)reader["Naam"], (string)reader["Adres"]);
+                    Klant klant = MaakNieuweKlant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]);
                     reader.Close();
                     return klant;
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine($"Error: ${e.Message}");
-                    return null;
+                    throw new DbKlantManagerException("DbKlantManager: Fout bij ophalen van klant uit database");
                 }
                 finally
                 {
@@ -110,7 +127,7 @@ namespace BusinessLayer.Managers
 
         public IReadOnlyList<Klant> HaalOp(Func<Klant, bool> predicate)
         {
-            // Note: Performaneter om te implementeren via LINQ to Entities of LINQ to SQL
+            // Note: Performanter om te implementeren via LINQ to Entities of LINQ to SQL
             SqlConnection connection = GetConnection();
             string query = "SELECT * FROM Klant";
 
@@ -125,7 +142,7 @@ namespace BusinessLayer.Managers
                     List<Klant> klanten = new List<Klant>();
                     while (reader.Read())
                     {
-                        klanten.Add(new Klant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]));
+                        klanten.Add(MaakNieuweKlant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]));
                     }
                     reader.Close();
                     var selection = klanten.Where<Klant>(predicate).ToList();
@@ -134,7 +151,7 @@ namespace BusinessLayer.Managers
                 catch (Exception e)
                 {
                     Console.WriteLine($"Error: ${e.Message}");
-                    return null;
+                    throw new DbKlantManagerException("DbKlantManager: Fout bij ophalen van klant(en) uit database");
                 }
                 finally
                 {
@@ -147,7 +164,32 @@ namespace BusinessLayer.Managers
         public void Verwijder(Klant klant)
         {
             if (klant == null) throw new DbKlantManagerException("DbKlantManager: Klant mag niet null zijn");
+            if (klant.KlantId <= 0) throw new DbKlantManagerException("DbKlantManager: Te verwijderen klant heeft een invalide Id");
 
+            SqlConnection connection = GetConnection();
+            string query = "DELETE FROM Klant WHERE Id=@id";
+
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.CommandText = query;
+                connection.Open();
+
+                try
+                {
+                    command.Parameters.Add(new SqlParameter("@id", SqlDbType.BigInt));
+                    command.Parameters["@id"].Value = klant.KlantId;
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error: ${e.Message}");
+                    throw new DbKlantManagerException("DbKlantManager: Fout bij verwijderen van klant uit database");
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
         }
 
         public void VoegToe(Klant klant)
@@ -177,6 +219,7 @@ namespace BusinessLayer.Managers
                 catch (Exception e)
                 {
                     Console.WriteLine($"Error: ${e.Message}");
+                    throw new DbKlantManagerException("DbKlantManager: Fout bij toevoegen van klant aan database");
                 }
                 finally
                 {
