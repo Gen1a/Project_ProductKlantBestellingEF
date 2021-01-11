@@ -3,7 +3,7 @@ using System;
 
 namespace BusinessLayer.Models
 {
-    public class Product
+    public class Product : Observable
     {
         #region Fields
         private string _name;   // geen auto-implemented property => backing field nodig
@@ -11,15 +11,15 @@ namespace BusinessLayer.Models
         private long _productId;
         #endregion
         #region Constructors
-        public Product(string naam)
+        internal Product(string naam)
         {
             Naam = naam;
         }
-        public Product(string naam, decimal prijs) : this(naam)
+        internal Product(string naam, decimal prijs) : this(naam)
         {
             Prijs = prijs;
         }
-        public Product(string naam, decimal prijs, long id) : this(naam, prijs)
+        internal Product(string naam, decimal prijs, long id) : this(naam, prijs)
         {
             ProductId = id;
         }
@@ -35,6 +35,7 @@ namespace BusinessLayer.Models
                 if (string.IsNullOrWhiteSpace(value))
                     throw new ProductException("Naam van een product mag niet leeg zijn");
                 _name = value;
+                NotifyPropertyChanged("Naam");
             }
         }
         // Prijs in euro, wijzigbaar
@@ -45,7 +46,8 @@ namespace BusinessLayer.Models
                 if (value < 0)
                     throw new ProductException("Prijs van product mag niet kleiner dan 0 zijn");
                 _prijs = value;
-                
+                NotifyPropertyChanged("Prijs");
+
             }
         }
         // Product Id nodig om referentie te behouden bij wijzigen van naam
@@ -54,8 +56,8 @@ namespace BusinessLayer.Models
             get => _productId;
             set
             {
-                if (value <= 0)
-                    throw new ProductException("Id van product moet groter zijn dan 0");
+                if (value < 0)
+                    throw new ProductException("Id van product is invalide");
                 _productId = value;
             }
         }

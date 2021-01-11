@@ -14,7 +14,7 @@ namespace BusinessLayer.Models
         #endregion
 
         #region Constructors
-        public Klant(string naam, string adres)
+        internal Klant(string naam, string adres)
         {
             _bestellingen = new List<Bestelling>();
             Naam = naam;
@@ -42,8 +42,8 @@ namespace BusinessLayer.Models
             get => _klantId;
             set
             {
-                if (value <= 0)
-                    throw new KlantException("Id van klant moet groter zijn dan 0");
+                if (value < 0)
+                    throw new KlantException("Id van klant is invalide");
                 _klantId = value;
             }
         }

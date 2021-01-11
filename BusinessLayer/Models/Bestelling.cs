@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace BusinessLayer.Models
 {
-    public class Bestelling
+    public class Bestelling : Observable
     {
         #region Fields
         private Dictionary<Product, int> _producten;
@@ -15,21 +15,28 @@ namespace BusinessLayer.Models
         #endregion
 
         #region Constructors
-        public Bestelling(long id, DateTime datum)
+        internal Bestelling(DateTime datum)
         {
             _producten = new Dictionary<Product, int>();
             Betaald = false;
-            BestellingId = id;
             Datum = datum;
         }
-        public Bestelling(long id, DateTime datum, Klant klant) : this(id, datum)
+        internal Bestelling(DateTime datum, Klant klant) : this(datum)
         {
             Klant = klant;
         }
-        public Bestelling(long id, DateTime datum, Klant klant, Dictionary<Product, int> producten) : this(id, datum, klant)
+
+        internal Bestelling(DateTime datum, Klant klant, Dictionary<Product, int> producten) : this(datum, klant)
         {
             if (producten == null) throw new BestellingException("Collectie producten mag niet leeg zijn");
             _producten = producten;
+            Klant = klant;
+        }
+
+        internal Bestelling(DateTime datum, Klant klant, Dictionary<Product, int> producten, long id) : this(datum, klant, producten)
+        {
+            Klant = klant;
+            BestellingId = id;
         }
         #endregion
 
@@ -38,8 +45,8 @@ namespace BusinessLayer.Models
         {   
             get => _bestellingId;
             set {
-                if (value <= 0)
-                    throw new BestellingException("BestellingsId moet groter zijn dan 0");
+                if (value < 0)
+                    throw new BestellingException("Id van Bestellings is invalide");
                 _bestellingId = value;
             }
         }
@@ -57,6 +64,7 @@ namespace BusinessLayer.Models
                 if (!value.HeeftBestelling(this))   // indien bestelling nog niet aanwezig bij nieuwe klant
                     value.VoegBestellingToe(this);
                 _klant = value;
+                NotifyPropertyChanged("Klant");
             }
         }
         public DateTime Datum {
@@ -66,6 +74,7 @@ namespace BusinessLayer.Models
                 if (value == null)
                     throw new BestellingException("Datum van bestelling mag niet null zijn");
                 _datum = value;
+                NotifyPropertyChanged("Datum");
             }
         }
         public decimal PrijsBetaald { get; private set; }
@@ -77,6 +86,7 @@ namespace BusinessLayer.Models
                 _betaald = value;
                 if (value)
                     PrijsBetaald = BerekenKostprijs();
+                NotifyPropertyChanged("Betaald");
             }
         }
         #endregion
