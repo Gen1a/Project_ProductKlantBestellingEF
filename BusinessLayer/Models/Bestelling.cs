@@ -10,6 +10,7 @@ namespace BusinessLayer.Models
         private Dictionary<Product, int> _producten;
         private long _bestellingId;
         private bool _betaald;
+        private decimal _prijsBetaald;
         private Klant _klant;
         private DateTime _datum;
         #endregion
@@ -48,6 +49,7 @@ namespace BusinessLayer.Models
                 if (value < 0)
                     throw new BestellingException("Id van Bestellings is invalide");
                 _bestellingId = value;
+                NotifyPropertyChanged("BestellingId");
             }
         }
         public Klant Klant {
@@ -77,7 +79,16 @@ namespace BusinessLayer.Models
                 NotifyPropertyChanged("Datum");
             }
         }
-        public decimal PrijsBetaald { get; private set; }
+        public decimal PrijsBetaald {
+            get => _prijsBetaald;
+            set
+            {
+                if (value < 0)
+                    throw new BestellingException("Prijs van bestellingen mag niet kleiner dan 0 zijn");
+                _prijsBetaald = value;
+                NotifyPropertyChanged("PrijsBetaald");
+            }
+        }
 
         public bool Betaald {
             get => _betaald;
