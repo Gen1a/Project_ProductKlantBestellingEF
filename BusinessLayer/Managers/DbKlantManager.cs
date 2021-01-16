@@ -1,4 +1,5 @@
 ﻿using BusinessLayer.Exceptions;
+using BusinessLayer.Factories;
 using BusinessLayer.Interfaces;
 using BusinessLayer.Models;
 using System;
@@ -21,23 +22,6 @@ namespace BusinessLayer.Managers
                 throw new DbKlantManagerException("Fout bij het aanmaken van DbKlantManager: connectionstring moet ingevuld zijn");
             }
             this.connectionString = connection;
-        }
-
-        public Klant MaakNieuweKlant(string naam, string adres)
-        {
-            if (string.IsNullOrEmpty(naam)) throw new DbKlantManagerException("DbKlantManager: Naam van een klant mag niet leeg zijn");
-            if (string.IsNullOrEmpty(adres)) throw new DbKlantManagerException("DbKlantManager: Adres van een klant mag niet leeg zijn");
-            
-            return new Klant(naam, adres);
-        }
-
-        public Klant MaakNieuweKlant(string naam, string adres, long id)
-        {
-            if (id < 0) throw new DbKlantManagerException("DbKlantManager: Id van klant is invalide");
-            Klant k = MaakNieuweKlant(naam, adres);
-            k.KlantId = id;
-
-            return k;
         }
 
         private SqlConnection GetConnection()
@@ -71,7 +55,7 @@ namespace BusinessLayer.Managers
                     List<Klant> klanten = new List<Klant>();
                     while (reader.Read())
                     {
-                        klanten.Add(MaakNieuweKlant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]));
+                        klanten.Add(KlantFactory.MaakNieuweKlant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]));
                     }
                     reader.Close();
                     return klanten;
@@ -109,7 +93,7 @@ namespace BusinessLayer.Managers
                 {
                     SqlDataReader reader = command.ExecuteReader();
                     reader.Read();
-                    Klant klant = MaakNieuweKlant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]);
+                    Klant klant = KlantFactory.MaakNieuweKlant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]);
                     reader.Close();
                     return klant;
                 }
@@ -142,7 +126,7 @@ namespace BusinessLayer.Managers
                     List<Klant> klanten = new List<Klant>();
                     while (reader.Read())
                     {
-                        klanten.Add(MaakNieuweKlant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]));
+                        klanten.Add(KlantFactory.MaakNieuweKlant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]));
                     }
                     reader.Close();
                     var selection = klanten.Where<Klant>(predicate).ToList();
@@ -164,7 +148,7 @@ namespace BusinessLayer.Managers
         public void Verwijder(Klant klant)
         {
             if (klant == null) throw new DbKlantManagerException("DbKlantManager: Klant mag niet null zijn");
-            if (klant.KlantId <= 0) throw new DbKlantManagerException("DbKlantManager: Te verwijderen klant heeft een invalide Id");
+            if (klant.KlantId < 0) throw new DbKlantManagerException("DbKlantManager: Te verwijderen klant heeft een invalide Id");
 
             SqlConnection connection = GetConnection();
             string query = "DELETE FROM Klant WHERE Id=@id";
@@ -192,6 +176,11 @@ namespace BusinessLayer.Managers
             }
         }
 
+        /// <summary>
+        /// Tries to add a new Klant to database without returning it's unique ID.
+        /// </summary>
+        /// <param name="klant"></param>
+        /// <returns></returns>
         public void VoegToe(Klant klant)
         {
             if (klant == null) throw new DbKlantManagerException("DbKlantManager: Klant mag niet null zijn");
@@ -215,6 +204,53 @@ namespace BusinessLayer.Managers
                     command.Parameters["@naam"].Value = klant.Naam;
                     command.Parameters["@adres"].Value = klant.Adres;
                     command.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error: ${e.Message}");
+                    throw new DbKlantManagerException("DbKlantManager: Fout bij toevoegen van klant aan database");
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tries to add a new Klant to database and returns the new Klant's unique ID.
+        /// </summary>
+        /// <param name="klant"></param>
+        /// <returns></returns>
+        public long VoegToeEnGeefId(Klant klant)
+        {
+            if (klant == null) throw new DbKlantManagerException("DbKlantManager: Klant mag niet null zijn");
+            if (string.IsNullOrEmpty(klant.Naam) || string.IsNullOrEmpty(klant.Adres))
+            {
+                throw new DbKlantManagerException("DbKlantManager: Klant moet een naam en adres hebben");
+            }
+
+            SqlConnection connection = GetConnection();
+            string query = "INSERT INTO Klant (Naam, Adres) OUTPUT INSERTED.Id VALUES (@naam, @adres)";
+
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.CommandText = query;
+                connection.Open();
+
+                try
+                {
+                    command.Parameters.Add(new SqlParameter("@naam", SqlDbType.NVarChar));
+                    command.Parameters.Add(new SqlParameter("@adres", SqlDbType.NVarChar));
+                    command.Parameters["@naam"].Value = klant.Naam;
+                    command.Parameters["@adres"].Value = klant.Adres;
+                    // Execute query and retrieve new identity Id for new Klant
+                    Int64 newKlantId = 0;
+                    var result = command.ExecuteScalar();
+                    if (result != null)
+                        newKlantId = (Int64)result;
+
+                    return newKlantId;
                 }
                 catch (Exception e)
                 {

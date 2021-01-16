@@ -1,4 +1,5 @@
 ﻿using BusinessLayer.Exceptions;
+using BusinessLayer.Factories;
 using BusinessLayer.Interfaces;
 using BusinessLayer.Models;
 using System;
@@ -21,23 +22,6 @@ namespace BusinessLayer.Managers
                 throw new DbProductManagerException("Fout bij het aanmaken van DbProductManager: connectionstring moet ingevuld zijn");
             }
             this.connectionString = connection;
-        }
-
-        public Product MaakNieuwProduct(string naam, decimal prijs)
-        {
-            if (string.IsNullOrEmpty(naam)) throw new DbProductManagerException("DbProductManager: Naam van een product mag niet leeg zijn");
-            if (prijs < 0) throw new DbProductManagerException("DbProductManager: Prijs van een product mag niet kleiner dan 0 zijn");
-            
-            return new Product(naam, prijs);
-        }
-
-        public Product MaakNieuwProduct(string naam, decimal prijs, long id)
-        {
-            if (id < 0) throw new DbProductManagerException("DbProductManager: Id van product is invalide");
-            Product p = MaakNieuwProduct(naam, prijs);
-            p.ProductId = id;
-
-            return p;
         }
 
         private SqlConnection GetConnection()
@@ -71,7 +55,7 @@ namespace BusinessLayer.Managers
                     List<Product> producten = new List<Product>();
                     while (reader.Read())
                     {
-                        producten.Add(MaakNieuwProduct((string)reader["Naam"], (decimal)reader["Prijs"], (long)reader["Id"]));
+                        producten.Add(ProductFactory.MaakNieuwProduct((string)reader["Naam"], (decimal)reader["Prijs"], (long)reader["Id"]));
                     }
                     reader.Close();
                     return producten;
@@ -109,7 +93,7 @@ namespace BusinessLayer.Managers
                 {
                     SqlDataReader reader = command.ExecuteReader();
                     reader.Read();
-                    Product product = MaakNieuwProduct((string)reader["Naam"], (decimal)reader["Prijs"], (long)reader["Id"]);
+                    Product product = ProductFactory.MaakNieuwProduct((string)reader["Naam"], (decimal)reader["Prijs"], (long)reader["Id"]);
                     reader.Close();
                     return product;
                 }
@@ -142,7 +126,7 @@ namespace BusinessLayer.Managers
                     List<Product> producten = new List<Product>();
                     while (reader.Read())
                     {
-                        producten.Add(MaakNieuwProduct((string)reader["Naam"], (decimal)reader["Prijs"], (long)reader["Id"]));
+                        producten.Add(ProductFactory.MaakNieuwProduct((string)reader["Naam"], (decimal)reader["Prijs"], (long)reader["Id"]));
                     }
                     reader.Close();
                     var selection = producten.Where<Product>(predicate).ToList();
@@ -192,6 +176,12 @@ namespace BusinessLayer.Managers
             }
         }
 
+
+        /// <summary>
+        /// Tries to add a new Product to database.
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
         public void VoegToe(Product product)
         {
             if (product == null) throw new DbKlantManagerException("DbKlantManager: Klant mag niet null zijn");
@@ -213,6 +203,51 @@ namespace BusinessLayer.Managers
                     command.Parameters["@naam"].Value = product.Naam;
                     command.Parameters["@prijs"].Value = product.Prijs;
                     command.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error: ${e.Message}");
+                    throw new DbProductManagerException("DbProductManager: Fout bij toevoegen van product aan database");
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tries to add a new Product to database and returns the new Product's unique ID.
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        public long VoegToeEnGeefId(Product product)
+        {
+            if (product == null) throw new DbProductManagerException("DbProductManager: Product mag niet null zijn");
+            if (string.IsNullOrEmpty(product.Naam)) throw new DbProductManagerException("DbProductManager: Productnaam mag niet leeg zijn");
+            if (product.Prijs < 0) throw new DbProductManagerException("DbProductManager: Productprijs mag niet kleiner dan 0 zijn");
+
+            SqlConnection connection = GetConnection();
+            string query = "INSERT INTO Product (Naam, Prijs) OUTPUT INSERTED.Id VALUES (@naam, @prijs)";
+
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.CommandText = query;
+                connection.Open();
+
+                try
+                {
+                    command.Parameters.Add(new SqlParameter("@naam", SqlDbType.NVarChar));
+                    command.Parameters.Add(new SqlParameter("@prijs", SqlDbType.Decimal));
+                    command.Parameters["@naam"].Value = product.Naam;
+                    command.Parameters["@prijs"].Value = product.Prijs;
+                    // Execute query and retrieve new identity Id for new Klant
+                    Int64 newProductId = 0;
+                    var result = command.ExecuteScalar();
+                    if (result != null)
+                        newProductId = (Int64)result;
+
+                    return newProductId;
                 }
                 catch (Exception e)
                 {

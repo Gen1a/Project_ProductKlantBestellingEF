@@ -111,6 +111,36 @@ namespace BusinessLayer.Managers
             }
         }
 
+        public void Verwijder(long bestellingId)
+        {
+            if (bestellingId <= 0) throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Te verwijderen Product_Bestelling heeft een invalide Id");
+
+            SqlConnection connection = GetConnection();
+            string query = "DELETE FROM Product_Bestelling WHERE bestellingId=@bestellingId";
+
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.CommandText = query;
+                connection.Open();
+
+                try
+                {
+                    command.Parameters.Add(new SqlParameter("@bestellingId", SqlDbType.BigInt));
+                    command.Parameters["@bestellingId"].Value = bestellingId;
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error: ${e.Message}");
+                    throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Fout bij verwijderen van Product_Bestelling uit database");
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+        }
+
         public void VoegToe(Product_Bestelling item)
         {
             if (item == null) throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Product_Bestelling mag niet null zijn");
