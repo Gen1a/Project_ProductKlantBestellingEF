@@ -119,6 +119,19 @@ namespace BusinessLayer.Models
             Console.WriteLine(this);
             foreach (Bestelling b in _bestellingen) Console.WriteLine($"    bestelling:{b}");
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Klant klant &&
+                   KlantId == klant.KlantId;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(KlantId);
+        }
+
+
         #endregion
     }
 }
