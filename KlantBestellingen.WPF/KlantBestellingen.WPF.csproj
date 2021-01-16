@@ -8,6 +8,9 @@
 
   <ItemGroup>
     <None Remove="Images\close.png" />
+    <None Remove="Images\dutch.png" />
+    <None Remove="Images\english.png" />
+    <None Remove="Images\language.png" />
     <None Remove="Images\order.png" />
     <None Remove="Images\product.png" />
     <None Remove="Images\user.png" />
@@ -15,6 +18,15 @@
 
   <ItemGroup>
     <Content Include="Images\close.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\dutch.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\english.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\language.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\order.png">
@@ -26,6 +38,10 @@
     <Content Include="Images\user.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

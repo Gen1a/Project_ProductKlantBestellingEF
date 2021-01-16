@@ -1,5 +1,7 @@
 ﻿using KlantBestellingen.WPF.Languages;
 using System.Windows;
+using System.Globalization;
+using System.Threading;
 
 namespace KlantBestellingen.WPF
 {
@@ -10,23 +12,14 @@ namespace KlantBestellingen.WPF
     {
         private App()
         {
-            // Initialize App with dummy data
-            Context.Populate();
-            //
-            //Translations.Culture = new System.Globalization.CultureInfo("nl-BE");
-            Translations.Culture = new System.Globalization.CultureInfo("en-US");
         }
+
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            MessageBox.Show("Er is een onverwachte fout opgetreden: "
-            + e.Exception.Message, "Foutmelding", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(Translations.UnexpectedErrorMessage
+            + e.Exception.Message, Translations.UnexpectedError, MessageBoxButton.OK, MessageBoxImage.Warning);
             // We zeggen hier dat de exception door ons afgehandeld is
             e.Handled = true;
-
-            //MessageBox.Show("An unhandled exception just occurred: "
-            //+ e.Exception.Message, Translations.ExceptionRaised, MessageBoxButton.OK, MessageBoxImage.Warning);
-            //// We zeggen hier dat de exception door ons afgehandeld is
-            //e.Handled = true;
         }
     }
 }

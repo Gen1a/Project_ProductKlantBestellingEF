@@ -1,26 +1,34 @@
-﻿//using BusinessLayer.Interfaces;
-using BusinessLayer.Managers;
+﻿using BusinessLayer.Managers;
 using BusinessLayer.Models;
 using BusinessLayer.Factories;
 using System;
 using System.Windows.Threading;
+using System.Configuration;
 
 namespace KlantBestellingen.WPF
 {
-    public static class Context
+    public static class Controller
     {
-        public static IDFactory IdFactory { get; } = new IDFactory(0, 100, 5000);
-        // DbKlantManager!
-        public static KlantManager KlantManager{ get; } = new KlantManager(); // Experimenteer: kan ook nog altijd DbKlantManager zijn!
-        public static ProductManager ProductManager { get; } = new ProductManager();
-        public static BestellingManager BestellingManager { get; } = new BestellingManager();
+        // DATABASE VERSION
+        //string connectionString = ConfigurationManager.ConnectionStrings["HPEnvy"].ConnectionString;
+        private static readonly string connectionString = ConfigurationManager.ConnectionStrings["HPZBook"].ConnectionString;
+
+        public static DbKlantManager KlantManager = new DbKlantManager(connectionString);
+        public static DbProductManager ProductManager = new DbProductManager(connectionString);
+        public static DbBestellingManager BestellingManager = new DbBestellingManager(connectionString);
+
+        // MEMORY VERSION
+        //public static IDFactory IdFactory { get; } = new IDFactory(0, 100, 5000);
+        //public static KlantManager KlantManager{ get; } = new KlantManager(); // Experimenteer: kan ook nog altijd DbKlantManager zijn!
+        //public static ProductManager ProductManager { get; } = new ProductManager();
+        //public static BestellingManager BestellingManager { get; } = new BestellingManager();
 
         // Method which populates Managers with dummy data
         public static void Populate()
         {
             // Test code: moet weg indien db opgevuld
-            KlantManager.VoegKlantToe(KlantFactory.MaakKlant("klant 1", "adres 1", IdFactory));
-            KlantManager.VoegKlantToe(KlantFactory.MaakKlant("klant 2", "adres 2", IdFactory));
+            //KlantManager.VoegKlantToe(KlantFactory.MaakKlant("klant 1", "adres 1", IdFactory));
+            //KlantManager.VoegKlantToe(KlantFactory.MaakKlant("klant 2", "adres 2", IdFactory));
             //DbProductManager dbProductMgr = new DbProductManager();
             //dbProductMgr.VoegToe(ProductFactory.MaakProduct("Product 1", 5.6, IdFactory));
             //dbProductMgr.VoegToe(ProductFactory.MaakProduct("Product 2", 6.7, IdFactory));

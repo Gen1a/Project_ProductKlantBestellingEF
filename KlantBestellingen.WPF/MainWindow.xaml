@@ -4,8 +4,30 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KlantBestellingen.WPF"
+        xmlns:converters="clr-namespace:KlantBestellingen.WPF.ValueConverters"
+        xmlns:languages="clr-namespace:KlantBestellingen.WPF.Languages"
         mc:Ignorable="d"
-        Title="Bestellingssysteem" Height="450" Width="800">
+        Title="{x:Static languages:Translations.OrderingSystem}" Height="450" Width="800">
+    <Window.Resources>
+        <converters:PaidConverter x:Key="PaidConverter"></converters:PaidConverter>
+        <!-- DataGrid style -->
+        <Style x:Key="DataGridStyle1" TargetType="{x:Type DataGrid}">
+            <Setter Property="ColumnHeaderStyle" Value="{DynamicResource ColumnHeaderStyle1}"/>
+        </Style>
+        <!-- DataGridColumnHeader style -->
+        <Style x:Key="ColumnHeaderStyle1" TargetType="DataGridColumnHeader">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="SlateGray"/>
+            <Setter Property="Foreground" Value="GhostWhite"/>
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="DemiBold" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="ToolTip" Value="{x:Static languages:Translations.ClickToSort}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <!-- MENU -->
@@ -13,32 +35,31 @@
             <!-- CONTENT -->
             <RowDefinition Height="*"/>
             <!-- STATUS -->
-            <RowDefinition Height="Auto"/>           
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <!-- DOCKPANEL MENU OP RIJ 0 KOLOM 0 -->
         <DockPanel Grid.Row="0" Grid.Column="0">
             <!-- BOVENAAN DOCKEN -->
             <Menu DockPanel.Dock="Top">
-                <MenuItem Header="_Bestand">
-                    <MenuItem Header="_Sluiten" Click="MenuItem_Sluiten_Click">
+                <MenuItem Header="{x:Static languages:Translations.File}">
+                    <MenuItem Header="{x:Static languages:Translations.Close}" Click="MenuItem_Sluiten_Click">
                         <MenuItem.Icon>
                             <Image Source="/KlantBestellingen.WPF;component/Images/close.png" />
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="_Beheer">
-                    <MenuItem Header="_Klanten" Click="MenuItem_Klanten_Click">
+                <MenuItem Header="{x:Static languages:Translations.Manage}">
+                    <MenuItem Header="{x:Static languages:Translations.Customers}" Click="MenuItem_Klanten_Click">
                         <MenuItem.Icon>
                             <Image Source="/KlantBestellingen.WPF;component/Images/user.png" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="_Producten" Click="MenuItem_Producten_Click">
+                    <MenuItem Header="{x:Static languages:Translations.Products}" Click="MenuItem_Producten_Click">
                         <MenuItem.Icon>
                             <Image Source="/KlantBestellingen.WPF;component/Images/product.png" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <Separator />
-                    <MenuItem Header="_Bestellingdetail">
+                    <MenuItem Header="{x:Static languages:Translations.Orders}" Click="MenuItem_Bestellingen_Click">
                         <MenuItem.Icon>
                             <Image Source="/KlantBestellingen.WPF;component/Images/order.png" />
                         </MenuItem.Icon>
@@ -47,15 +68,58 @@
             </Menu>
         </DockPanel>
         <!-- CONTENT GRID OP RIJ 1 KOLOM 0 -->
-        <Grid>
-
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="43*"></RowDefinition>
+                <RowDefinition Height="249*"/>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label x:Name="lblKlant" Grid.Column="0" Margin="5,0,5,0" FontWeight="Bold" FontSize="15" Content="{x:Static languages:Translations.CustomerNameTag}" VerticalAlignment="Center"/>
+            <TextBox x:Name="tbKlant" Grid.Column="1" Margin="5,0,5,0" MinWidth="250" MinHeight="20" KeyUp="TextBox_KeyUp" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <!-- DisplayMemberPath en SelectedValuePath mappen naar Klant property 'Naam' -->
+            <ComboBox x:Name="cbKlanten" Grid.Column="2" Margin="5,0,5,0" DisplayMemberPath="Naam" SelectedIndex="0" SelectedValuePath="Naam" VerticalAlignment="Center" SelectionChanged="ComboBox_SelectionChanged"/>
+            <Label x:Name="lblBestellingen" Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" FontWeight="Bold" FontSize="15" Content="{x:Static languages:Translations.OrdersTag}"/>
+            <DataGrid x:Name="dgOrderSelection" Style="{DynamicResource DataGridStyle1}" Grid.Row="2" Grid.ColumnSpan="4" Margin="10" AutoGenerateColumns="False" CanUserAddRows="False"
+                      CanUserDeleteRows="True" AlternatingRowBackground="#e6efff" IsReadOnly="True" Grid.RowSpan="2" MouseLeftButtonUp="Row_Bestelling_SingleClick" MouseDoubleClick="Row_Bestelling_DoubleClick">
+                <DataGrid.Columns>
+                    <!-- Linken aan property van class Bestelling -->
+                    <DataGridTextColumn Header="{x:Static languages:Translations.Time}" Binding="{Binding Datum, StringFormat={}{0:HH:mm:ss - dd/MM/yyyy}}" MinWidth="200"/>
+                    <DataGridTextColumn Header="{x:Static languages:Translations.Price}" Binding="{Binding PrijsBetaald, StringFormat='{}{0:N} EUR', ConverterCulture=de-DE}" MinWidth="150"/>
+                    <DataGridTextColumn Header="{x:Static languages:Translations.OrderId}" Binding="{Binding BestellingId}" MinWidth="150"/>
+                    <DataGridTextColumn Header="{x:Static languages:Translations.Paid}" Binding="{Binding Betaald, Converter={StaticResource PaidConverter}}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button x:Name="BtnNewOrder" Grid.Row="4" Grid.Column="2" Content="{x:Static languages:Translations.NewOrder}" Cursor="Hand" Click="MaakBestelling_Click" HorizontalAlignment="Right" Margin="0,0,10,10" Background="White" Foreground="Black" FontWeight="Normal" FontStyle="Normal" FontSize="14"/>
         </Grid>
         <!-- DOCKPANEL STATUS OP RIJ 2 KOLOM 0 -->
         <DockPanel Grid.Row="2">
             <!-- ONDERAAN DOCKEN -->
             <StatusBar DockPanel.Dock="Bottom">
-                <StatusBarItem>
-                    <TextBlock Name="TbStatusInformation" />
+                <StatusBar.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="265" />
+                                <ColumnDefinition Width="150" />
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </ItemsPanelTemplate>
+                </StatusBar.ItemsPanel>
+                <StatusBarItem Grid.Column="0">
+                    <TextBlock Name="TbStatusInformation" Text="{x:Static languages:Translations.AmountOfProductsTag}" Margin="10,0,0,0"/>
+                </StatusBarItem>
+                <StatusBarItem Grid.Column="1">
+                    <Grid>
+                        <ProgressBar x:Name="PbAantalProducten" Minimum ="0" Maximum="30" Width="100" Height="14" Margin="0,0,10,0" Background="#FF8D91BD" BorderBrush="White" Foreground="#FF3D5BC1"/>
+                        <TextBlock x:Name="TbAantalProducten" Text="{Binding ElementName=PbAantalProducten, Path=Value}" Margin="45,0,0,0" FontWeight="Bold"/>
+                    </Grid>
                 </StatusBarItem>
             </StatusBar>
         </DockPanel>

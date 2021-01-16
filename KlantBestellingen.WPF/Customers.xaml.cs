@@ -1,4 +1,6 @@
 ﻿using BusinessLayer.Models;
+using BusinessLayer.Factories;
+using KlantBestellingen.WPF.Languages;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Windows;
@@ -10,16 +12,16 @@ namespace KlantBestellingen.WPF
     /// <summary>
     /// Interaction logic for Klanten.xaml
     /// </summary>
-    public partial class Klanten : Window
+    public partial class Customers : Window
     {
         private ObservableCollection<Klant> _klanten;
 
-        public Klanten()
+        public Customers()
         {
             InitializeComponent();
-            _klanten = new ObservableCollection<Klant>(Context.KlantManager.GeefKlanten());
+            _klanten = new ObservableCollection<Klant>(Controller.KlantManager.HaalOp());
             // Assign collection to datagrid
-            dgKlanten.ItemsSource = _klanten;
+            DgKlanten.ItemsSource = _klanten;
             // Fire event when ObservableCollection changes
             _klanten.CollectionChanged += _klanten_CollectionChanged;
         }
@@ -35,29 +37,29 @@ namespace KlantBestellingen.WPF
             {
                 foreach (Klant klant in e.OldItems)
                 {
-                    Context.KlantManager.VerwijderKlant(klant);
+                    Controller.KlantManager.Verwijder(klant);
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Add)
             {
                 foreach (Klant klant in e.NewItems)
                 {
-                    Context.KlantManager.VoegKlantToe(/*KlantFactory.MaakKlant(klant.Naam, klant.Adres, Context.IdFactory)*/ klant);
+                    klant.KlantId = Controller.KlantManager.VoegToeEnGeefId(klant);            
                 }
             }
         }
 
         /// <summary>
-        /// Handles pressing the 'Delete' key on keyboard when Klant selected.
+        /// Handles pressing the 'delete' key on keyboard when Klant selected.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void dgKlanten_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void DgKlanten_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             var grid = (DataGrid)sender;
             if (Key.Delete == e.Key)
             {
-                if (!(MessageBox.Show("Zeker dat je de klant wenst te verwijderen?", "Bevestigen", MessageBoxButton.YesNo) == MessageBoxResult.Yes))
+                if (!(MessageBox.Show(Translations.DeleteConfirmation + "the selected client(s)?", Translations.Confirmation, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes))
                 {
                     // Cancel delete and return
                     e.Handled = true;
@@ -83,13 +85,13 @@ namespace KlantBestellingen.WPF
             // Validate data
             if (string.IsNullOrEmpty(TbKlantNaam?.Text) || string.IsNullOrEmpty(TbKlantAdres?.Text))
             {
-                MessageBox.Show("Geef alle klantgegevens op!");
+                MessageBox.Show(Translations.ClientWarning);
                 return;
             }
 
             // Add new Klant to ObservableCollection
             // _klanten_CollectionChanged makes sure the changes also get pushed to BusinessLayer
-            Klant klant = new Klant(TbKlantNaam.Text, TbKlantAdres.Text);
+            Klant klant = KlantFactory.MaakNieuweKlant(TbKlantNaam.Text, TbKlantAdres.Text);
             _klanten.Add(klant);
 
             // Empty TextBoxes after adding new Klant
@@ -114,6 +116,26 @@ namespace KlantBestellingen.WPF
             {
                 BtnNieuweKlant.IsEnabled = false;
             }
+        }
+
+        /// <summary>
+        /// Handles clicking the 'Delete' button next to a Klant.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            Klant k = (Klant)DgKlanten.SelectedItem;
+            string klantNaam = k.Naam;
+
+            // Ask confirmation for deleting a Klant
+            if (!(MessageBox.Show($"{Translations.DeleteConfirmation}'{klantNaam}'?", Translations.Confirmation, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes))
+            {
+                // Cancel delete and return
+                e.Handled = true;
+                return;
+            }
+            _klanten.Remove(DgKlanten.SelectedItem as Klant);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿<Window x:Class="KlantBestellingen.WPF.Klanten"
+﻿<Window x:Class="KlantBestellingen.WPF.Customers"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,9 +6,9 @@
         xmlns:local="clr-namespace:KlantBestellingen.WPF"
         xmlns:languages="clr-namespace:KlantBestellingen.WPF.Languages"
         mc:Ignorable="d"
-        Title="Klanten" Height="450" Width="800">
+        Title="{x:Static languages:Translations.Customers}" Height="450" Width="800">
     <Grid>
-        <!-- 1ST ROW -->
+        <!-- GRID DEFINITIONS -->
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -18,13 +18,20 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <!-- FIRST ROW -->
-        <DataGrid x:Name="dgKlanten" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" AutoGenerateColumns="False" 
+        <DataGrid x:Name="DgKlanten" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" AutoGenerateColumns="False" 
                   CanUserAddRows="False" CanUserDeleteRows="True" AlternatingRowBackground="#FFB9BBFF" IsReadOnly="True"
-                  PreviewKeyDown="dgKlanten_PreviewKeyDown">
+                  PreviewKeyDown="DgKlanten_PreviewKeyDown">
             <DataGrid.Columns>
                 <!-- Get column header translation + bind Klant properties to column -->
                 <DataGridTextColumn Header="{x:Static languages:Translations.Name}" Binding="{Binding Naam}" MinWidth="200"></DataGridTextColumn>
                 <DataGridTextColumn Header="{x:Static languages:Translations.Address}" Binding="{Binding Adres}" MinWidth="200"></DataGridTextColumn>
+                <DataGridTemplateColumn Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="{x:Static languages:Translations.Delete}" Click="DeleteButton_Click" Cursor="Hand"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
         <!-- SECOND ROW -->
@@ -39,13 +46,13 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="{x:Static languages:Translations.NewClientTag}" Grid.Row="0" Grid.Column="0" Margin="0,0,15,0" Background="Black" Foreground="#FFD4D4D4" Padding="5,0,5,0"></TextBlock>
+            <TextBlock Text="{x:Static languages:Translations.NewCustomerTag}" Grid.Row="0" Grid.Column="0" Margin="0,0,15,0" Background="Black" Foreground="#FFD4D4D4" Padding="5,0,5,0"></TextBlock>
             <TextBlock Text="{x:Static languages:Translations.NameTag}" Grid.Row="0" Grid.Column="1" Margin="0,0,5,0"/>
             <TextBox x:Name="TbKlantNaam" Grid.Row="0" Grid.Column="2" MinWidth="150" Margin="0,0,10,0" KeyUp="Tb_KeyUp"/>
             <TextBlock Text="{x:Static languages:Translations.AddressTag}" Grid.Row="0" Grid.Column="3" Margin="0,0,5,0"/>
             <TextBox x:Name="TbKlantAdres" Grid.Row="0" Grid.Column="4" MinWidth="300" KeyUp="Tb_KeyUp"/>
         </Grid>
         <Button x:Name="BtnNieuweKlant" Grid.Row="1" Grid.Column="1" Margin="5" Content="{x:Static languages:Translations.Add}" HorizontalAlignment="Right" 
-                VerticalAlignment="Center" Width="100" Click="BtnNieuweKlant_Click" IsEnabled="False"/>
+                VerticalAlignment="Center" Width="100" Click="BtnNieuweKlant_Click" IsEnabled="False" Cursor="Hand"/>
     </Grid>
 </Window>
