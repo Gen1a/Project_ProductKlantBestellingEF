@@ -120,11 +120,71 @@
   <data name="Add" xml:space="preserve">
     <value>Voeg Toe</value>
   </data>
+  <data name="AddProduct" xml:space="preserve">
+    <value>Voeg Product Toe</value>
+  </data>
   <data name="Address" xml:space="preserve">
     <value>Adres</value>
   </data>
   <data name="AddressTag" xml:space="preserve">
     <value>Adres:</value>
+  </data>
+  <data name="AmountOfProductsTag" xml:space="preserve">
+    <value>Aantal producten in deze bestelling (max. 30):</value>
+  </data>
+  <data name="ChooseAProductTag" xml:space="preserve">
+    <value>Kies een product:</value>
+  </data>
+  <data name="ClickToSort" xml:space="preserve">
+    <value>Klik om te sorteren</value>
+  </data>
+  <data name="ClientWarning" xml:space="preserve">
+    <value>Gelieve alle klantgegevens in te geven</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="CloseAppConfirmation" xml:space="preserve">
+    <value>Ben je zeker dat je de applicatie wil afsluiten?</value>
+  </data>
+  <data name="Confirmation" xml:space="preserve">
+    <value>Bevestiging</value>
+  </data>
+  <data name="CustomerName" xml:space="preserve">
+    <value>Klantnaam</value>
+  </data>
+  <data name="CustomerNameTag" xml:space="preserve">
+    <value>Klantnaam:</value>
+  </data>
+  <data name="Customers" xml:space="preserve">
+    <value>Klanten</value>
+  </data>
+  <data name="CustomerTag" xml:space="preserve">
+    <value>Klant:</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Verwijder</value>
+  </data>
+  <data name="DeleteClient" xml:space="preserve">
+    <value>Ben je zeker dat je </value>
+  </data>
+  <data name="DeleteProduct" xml:space="preserve">
+    <value>Ben je zeker dat je de geselecteerde product(en) wenst te verwijderen</value>
+  </data>
+  <data name="Dutch" xml:space="preserve">
+    <value>Nederlands</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>Engels</value>
+  </data>
+  <data name="File" xml:space="preserve">
+    <value>Bestand</value>
+  </data>
+  <data name="LanguageSettings" xml:space="preserve">
+    <value>Taalinstellingen</value>
+  </data>
+  <data name="Manage" xml:space="preserve">
+    <value>Beheer</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Naam</value>
@@ -132,7 +192,85 @@
   <data name="NameTag" xml:space="preserve">
     <value>Naam:</value>
   </data>
-  <data name="NewClientTag" xml:space="preserve">
+  <data name="NewCustomerTag" xml:space="preserve">
     <value>Nieuwe Klant:</value>
+  </data>
+  <data name="NewOrder" xml:space="preserve">
+    <value>Nieuwe Bestelling</value>
+  </data>
+  <data name="NewProductTag" xml:space="preserve">
+    <value>Nieuw Product:</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nee</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>Bestelling</value>
+  </data>
+  <data name="OrderDetail" xml:space="preserve">
+    <value>Bestellingsdetails</value>
+  </data>
+  <data name="OrderId" xml:space="preserve">
+    <value>Bestelling ID</value>
+  </data>
+  <data name="OrderingSystem" xml:space="preserve">
+    <value>Bestellingssysteem</value>
+  </data>
+  <data name="OrderPaid" xml:space="preserve">
+    <value>Is de bestelling betaald?</value>
+  </data>
+  <data name="Orders" xml:space="preserve">
+    <value>Bestellingen</value>
+  </data>
+  <data name="OrdersTag" xml:space="preserve">
+    <value>Bestellingen:</value>
+  </data>
+  <data name="Paid" xml:space="preserve">
+    <value>Betaald</value>
+  </data>
+  <data name="PaidTag" xml:space="preserve">
+    <value>Betaald:</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Prijs</value>
+  </data>
+  <data name="PriceTag" xml:space="preserve">
+    <value>Prijs:</value>
+  </data>
+  <data name="Products" xml:space="preserve">
+    <value>Producten</value>
+  </data>
+  <data name="ProductsTag" xml:space="preserve">
+    <value>Producten:</value>
+  </data>
+  <data name="ProductWarning" xml:space="preserve">
+    <value>Gelieve alle productgegevens in te geven</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Opslaan</value>
+  </data>
+  <data name="SaveOrder" xml:space="preserve">
+    <value>Je bestelling is opgeslaan!</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Tijdstip</value>
+  </data>
+  <data name="TotalAmountTag" xml:space="preserve">
+    <value>Totaalbedrag:</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Foutmelding</value>
+  </data>
+  <data name="UnexpectedErrorMessage" xml:space="preserve">
+    <value>Er is een onverwachte fout opgetreden.</value>
+  </data>
+  <data name="UpdateOrder" xml:space="preserve">
+    <value>Je bestelling is aangepast!</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>Welkom!</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
   </data>
 </root>

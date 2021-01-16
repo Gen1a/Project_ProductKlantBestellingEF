@@ -120,11 +120,68 @@
   <data name="Add" xml:space="preserve">
     <value>Add</value>
   </data>
+  <data name="AddProduct" xml:space="preserve">
+    <value>Add Product</value>
+  </data>
   <data name="Address" xml:space="preserve">
     <value>Address</value>
   </data>
   <data name="AddressTag" xml:space="preserve">
     <value>Address:</value>
+  </data>
+  <data name="AmountOfProductsTag" xml:space="preserve">
+    <value>Number of products in this order (max. 30):</value>
+  </data>
+  <data name="ChooseAProductTag" xml:space="preserve">
+    <value>Choose a product:</value>
+  </data>
+  <data name="ClickToSort" xml:space="preserve">
+    <value>Click to sort</value>
+  </data>
+  <data name="ClientWarning" xml:space="preserve">
+    <value>Please enter all customer details</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="CloseAppConfirmation" xml:space="preserve">
+    <value>Are you sure you want to close the application?</value>
+  </data>
+  <data name="Confirmation" xml:space="preserve">
+    <value>Confirmation</value>
+  </data>
+  <data name="CustomerName" xml:space="preserve">
+    <value>Customer Name</value>
+  </data>
+  <data name="CustomerNameTag" xml:space="preserve">
+    <value>Customer Name:</value>
+  </data>
+  <data name="Customers" xml:space="preserve">
+    <value>Customers</value>
+  </data>
+  <data name="CustomerTag" xml:space="preserve">
+    <value>Customer:</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteConfirmation" xml:space="preserve">
+    <value>Are you sure you want to delete </value>
+  </data>
+  <data name="Dutch" xml:space="preserve">
+    <value>Dutch</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="LanguageSettings" xml:space="preserve">
+    <value>Language Settings</value>
+  </data>
+  <data name="Manage" xml:space="preserve">
+    <value>Manage</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
@@ -132,7 +189,85 @@
   <data name="NameTag" xml:space="preserve">
     <value>Name:</value>
   </data>
-  <data name="NewClientTag" xml:space="preserve">
-    <value>New Client:</value>
+  <data name="NewCustomerTag" xml:space="preserve">
+    <value>New Customer:</value>
+  </data>
+  <data name="NewOrder" xml:space="preserve">
+    <value>New Order</value>
+  </data>
+  <data name="NewProductTag" xml:space="preserve">
+    <value>New Product:</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="OrderDetail" xml:space="preserve">
+    <value>Orderdetails</value>
+  </data>
+  <data name="OrderId" xml:space="preserve">
+    <value>Order ID</value>
+  </data>
+  <data name="OrderingSystem" xml:space="preserve">
+    <value>Ordering System</value>
+  </data>
+  <data name="OrderPaid" xml:space="preserve">
+    <value>Has the order been paid?</value>
+  </data>
+  <data name="Orders" xml:space="preserve">
+    <value>Orders</value>
+  </data>
+  <data name="OrdersTag" xml:space="preserve">
+    <value>Orders:</value>
+  </data>
+  <data name="Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="PaidTag" xml:space="preserve">
+    <value>Paid:</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="PriceTag" xml:space="preserve">
+    <value>Price:</value>
+  </data>
+  <data name="Products" xml:space="preserve">
+    <value>Products</value>
+  </data>
+  <data name="ProductsTag" xml:space="preserve">
+    <value>Products:</value>
+  </data>
+  <data name="ProductWarning" xml:space="preserve">
+    <value>Please enter all product details</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SaveOrder" xml:space="preserve">
+    <value>Your order has been saved!</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="TotalAmountTag" xml:space="preserve">
+    <value>Total amount:</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="UnexpectedErrorMessage" xml:space="preserve">
+    <value>An unexpected error occured.</value>
+  </data>
+  <data name="UpdateOrder" xml:space="preserve">
+    <value>Your order has been updated!</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>Welcome!</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
   </data>
 </root>
