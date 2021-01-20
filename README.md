@@ -8,5 +8,5 @@ A desktop application which let's you manage Products, Customers and Orders, bot
 ## Technologies used
 - .NET Core
 - WPF
-- ADO.NET
+- Entity Framework Core
 - SQL Server
