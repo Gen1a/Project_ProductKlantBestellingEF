@@ -9,13 +9,11 @@ namespace KlantBestellingen.WPF
 {
     public static class Controller
     {
-        // DATABASE VERSION
-        //string connectionString = ConfigurationManager.ConnectionStrings["HPEnvy"].ConnectionString;
-        private static readonly string connectionString = ConfigurationManager.ConnectionStrings["HPZBook"].ConnectionString;
-
-        public static DbKlantManager KlantManager = new DbKlantManager(connectionString);
-        public static DbProductManager ProductManager = new DbProductManager(connectionString);
-        public static DbBestellingManager BestellingManager = new DbBestellingManager(connectionString);
+        // EF VERSION
+        public static DbKlantManager KlantManager = new DbKlantManager();
+        public static DbProductManager ProductManager = new DbProductManager();
+        public static DbBestellingManager BestellingManager = new DbBestellingManager();
+        public static DbProduct_BestellingManager Product_BestellingManager = new DbProduct_BestellingManager();
 
         // MEMORY VERSION
         //public static IDFactory IdFactory { get; } = new IDFactory(0, 100, 5000);

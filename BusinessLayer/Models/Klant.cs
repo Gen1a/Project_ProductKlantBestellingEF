@@ -1,7 +1,9 @@
 ﻿using BusinessLayer.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("BusinessLayerTests")]
 namespace BusinessLayer.Models
 {
     public class Klant : Observable

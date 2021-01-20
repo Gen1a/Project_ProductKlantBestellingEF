@@ -12,4 +12,8 @@
     <Folder Include="SQL\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EntityFrameworkRepository\EntityFrameworkRepository.csproj" />
+  </ItemGroup>
+
 </Project>

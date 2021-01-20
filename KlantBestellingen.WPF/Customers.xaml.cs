@@ -16,6 +16,18 @@ namespace KlantBestellingen.WPF
     {
         private ObservableCollection<Klant> _klanten;
 
+        private MainWindow _mainWindow;
+        public MainWindow MainWindow
+        {
+            get => _mainWindow;
+            set
+            {
+                if (_mainWindow == value)
+                    return;
+                _mainWindow = value;
+            }
+        }
+
         public Customers()
         {
             InitializeComponent();
@@ -44,9 +56,10 @@ namespace KlantBestellingen.WPF
             {
                 foreach (Klant klant in e.NewItems)
                 {
-                    klant.KlantId = Controller.KlantManager.VoegToeEnGeefId(klant);            
+                    klant.KlantId = Controller.KlantManager.VoegToe(klant);            
                 }
             }
+            MainWindow.RefreshKlanten();
         }
 
         /// <summary>
@@ -59,7 +72,7 @@ namespace KlantBestellingen.WPF
             var grid = (DataGrid)sender;
             if (Key.Delete == e.Key)
             {
-                if (!(MessageBox.Show(Translations.DeleteConfirmation + "the selected client(s)?", Translations.Confirmation, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes))
+                if (!(MessageBox.Show(Translations.DeleteCustomer + "?", Translations.Confirmation, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes))
                 {
                     // Cancel delete and return
                     e.Handled = true;
@@ -129,7 +142,7 @@ namespace KlantBestellingen.WPF
             string klantNaam = k.Naam;
 
             // Ask confirmation for deleting a Klant
-            if (!(MessageBox.Show($"{Translations.DeleteConfirmation}'{klantNaam}'?", Translations.Confirmation, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes))
+            if (!(MessageBox.Show(Translations.DeleteCustomer, Translations.Confirmation, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes))
             {
                 // Cancel delete and return
                 e.Handled = true;

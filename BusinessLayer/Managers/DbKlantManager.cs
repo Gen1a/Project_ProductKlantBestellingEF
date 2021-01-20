@@ -1,266 +1,81 @@
 ﻿using BusinessLayer.Exceptions;
 using BusinessLayer.Factories;
 using BusinessLayer.Interfaces;
-using BusinessLayer.Models;
+using EntityFrameworkRepository;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
+using KlantBL = BusinessLayer.Models.Klant;
+using KlantEF = EntityFrameworkRepository.Models.Klant;
 
 namespace BusinessLayer.Managers
 {
-    public class DbKlantManager : IDbManager<Klant>
+    public class DbKlantManager : IDbManager<KlantBL>
     {
-        // readonly possible if instance constructor of the class contains the instance field declaration
-        private readonly string connectionString;
+        // Define repository instance which functions as a session which connects to the database
+        private readonly EntityFrameworkRepository<KlantEF> _repository = new EntityFrameworkRepository<KlantEF>();
+        // Needed to store the Klant objects which EF tracks
+        private Dictionary<long, (KlantEF, KlantBL)> _mappedObjects = new Dictionary<long, (KlantEF, KlantBL)>();
 
-        public DbKlantManager(string connection)
+
+        public IReadOnlyList<KlantBL> HaalOp()
         {
-            if (string.IsNullOrEmpty(connection))
+            var klanten = new List<KlantBL>();
+            _mappedObjects = _repository.List().ToDictionary(c => c.Id, c => 
+                (c, KlantFactory.MaakNieuweKlant(c.Naam, c.Adres, c.Id)));
+
+            foreach(var dbItem in _mappedObjects.Values)
             {
-                throw new DbKlantManagerException("Fout bij het aanmaken van DbKlantManager: connectionstring moet ingevuld zijn");
+                klanten.Add(dbItem.Item2);
             }
-            this.connectionString = connection;
+
+            return klanten;
         }
 
-        private SqlConnection GetConnection()
+        public IReadOnlyList<KlantBL> HaalOp(Func<KlantBL, bool> predicate)
         {
-            SqlConnection connection;
+            var klanten = new List<KlantBL>();
+            foreach (var dbItem in _mappedObjects.Values)
+            {
+                klanten.Add(dbItem.Item2);
+            }
+            var selection = klanten.Where<KlantBL>(predicate).ToList();
+
+            return (IReadOnlyList<KlantBL>)selection;
+        }
+
+        public KlantBL HaalOp(long id)
+        {
+            // check if mappedObjects already contains KlantEF with this id
+            if (_mappedObjects.ContainsKey(id)) return _mappedObjects[id].Item2;
+
+            var klantEF = _repository.GetById(id);
+            _mappedObjects[id] = (klantEF, KlantFactory.MaakNieuweKlant(klantEF.Naam, klantEF.Adres, klantEF.Id));
+
+            return _mappedObjects[id].Item2;
+        }
+
+        public long VoegToe(KlantBL klant)
+        {
+            var newKlantEF = new KlantEF { Naam = klant.Naam, Adres = klant.Adres };
+            klant.KlantId = newKlantEF.Id = _repository.Create(newKlantEF);     // Create in _repository calls SaveChanges() and returns ID (long)
+            _mappedObjects[newKlantEF.Id] = (newKlantEF, klant);
+
+            return newKlantEF.Id;
+        }
+
+        public void Verwijder(KlantBL klant)
+        {
             try
             {
-                connection = new SqlConnection(connectionString);
+                _repository.Delete(_mappedObjects[klant.KlantId].Item1);    // Delete in _repository also calls SaveChanges();
+                _mappedObjects.Remove(klant.KlantId);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                throw new DbKlantManagerException("Fout bij aanmaken van connectie met databank: check connectiestring");
-            }
-            return connection;
-        }
-
-        public IReadOnlyList<Klant> HaalOp()
-        {
-            SqlConnection connection = GetConnection();
-            string query = "SELECT * FROM Klant";
-
-            using (SqlCommand command = connection.CreateCommand())
-            {
-                command.CommandText = query;
-                connection.Open();
-
-                try
-                {
-                    SqlDataReader reader = command.ExecuteReader();
-                    List<Klant> klanten = new List<Klant>();
-                    while (reader.Read())
-                    {
-                        klanten.Add(KlantFactory.MaakNieuweKlant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]));
-                    }
-                    reader.Close();
-                    return klanten;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error: ${e.Message}");
-                    throw new DbKlantManagerException("DbKlantManager: Fout bij ophalen van klanten uit database");
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-        }
-
-        public Klant HaalOp(long id)
-        {
-            if (id <= 0)
-            {
-                throw new DbKlantManagerException("DbKlantManager: Id van klant moet groter zijn dan 0");
-            }
-
-            SqlConnection connection = GetConnection();
-            string query = "SELECT * FROM Klant WHERE Id=@id";
-
-            using (SqlCommand command = connection.CreateCommand())
-            {
-                command.CommandText = query;
-                command.Parameters.Add(new SqlParameter("@id", SqlDbType.BigInt));
-                command.Parameters["@id"].Value = id;
-                connection.Open();
-
-                try
-                {
-                    SqlDataReader reader = command.ExecuteReader();
-                    reader.Read();
-                    Klant klant = KlantFactory.MaakNieuweKlant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]);
-                    reader.Close();
-                    return klant;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error: ${e.Message}");
-                    throw new DbKlantManagerException("DbKlantManager: Fout bij ophalen van klant uit database");
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-        }
-
-        public IReadOnlyList<Klant> HaalOp(Func<Klant, bool> predicate)
-        {
-            // Note: Performanter om te implementeren via LINQ to Entities of LINQ to SQL
-            SqlConnection connection = GetConnection();
-            string query = "SELECT * FROM Klant";
-
-            using (SqlCommand command = connection.CreateCommand())
-            {
-                command.CommandText = query;
-                connection.Open();
-
-                try
-                {
-                    SqlDataReader reader = command.ExecuteReader();
-                    List<Klant> klanten = new List<Klant>();
-                    while (reader.Read())
-                    {
-                        klanten.Add(KlantFactory.MaakNieuweKlant((string)reader["Naam"], (string)reader["Adres"], (long)reader["Id"]));
-                    }
-                    reader.Close();
-                    var selection = klanten.Where<Klant>(predicate).ToList();
-                    return selection;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error: ${e.Message}");
-                    throw new DbKlantManagerException("DbKlantManager: Fout bij ophalen van klant(en) uit database");
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-        }
-
-
-        public void Verwijder(Klant klant)
-        {
-            if (klant == null) throw new DbKlantManagerException("DbKlantManager: Klant mag niet null zijn");
-            if (klant.KlantId < 0) throw new DbKlantManagerException("DbKlantManager: Te verwijderen klant heeft een invalide Id");
-
-            SqlConnection connection = GetConnection();
-            string query = "DELETE FROM Klant WHERE Id=@id";
-
-            using (SqlCommand command = connection.CreateCommand())
-            {
-                command.CommandText = query;
-                connection.Open();
-
-                try
-                {
-                    command.Parameters.Add(new SqlParameter("@id", SqlDbType.BigInt));
-                    command.Parameters["@id"].Value = klant.KlantId;
-                    command.ExecuteNonQuery();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error: ${e.Message}");
-                    throw new DbKlantManagerException("DbKlantManager: Fout bij verwijderen van klant uit database");
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Tries to add a new Klant to database without returning it's unique ID.
-        /// </summary>
-        /// <param name="klant"></param>
-        /// <returns></returns>
-        public void VoegToe(Klant klant)
-        {
-            if (klant == null) throw new DbKlantManagerException("DbKlantManager: Klant mag niet null zijn");
-            if (string.IsNullOrEmpty(klant.Naam) || string.IsNullOrEmpty(klant.Adres))
-            {
-                throw new DbKlantManagerException("DbKlantManager: Klant moet een naam en adres hebben");
-            }
-
-            SqlConnection connection = GetConnection();
-            string query = "INSERT INTO Klant (Naam, Adres) VALUES (@naam, @adres)";
-
-            using (SqlCommand command = connection.CreateCommand())
-            {
-                command.CommandText = query;
-                connection.Open();
-
-                try
-                {
-                    command.Parameters.Add(new SqlParameter("@naam", SqlDbType.NVarChar));
-                    command.Parameters.Add(new SqlParameter("@adres", SqlDbType.NVarChar));
-                    command.Parameters["@naam"].Value = klant.Naam;
-                    command.Parameters["@adres"].Value = klant.Adres;
-                    command.ExecuteNonQuery();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error: ${e.Message}");
-                    throw new DbKlantManagerException("DbKlantManager: Fout bij toevoegen van klant aan database");
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Tries to add a new Klant to database and returns the new Klant's unique ID.
-        /// </summary>
-        /// <param name="klant"></param>
-        /// <returns></returns>
-        public long VoegToeEnGeefId(Klant klant)
-        {
-            if (klant == null) throw new DbKlantManagerException("DbKlantManager: Klant mag niet null zijn");
-            if (string.IsNullOrEmpty(klant.Naam) || string.IsNullOrEmpty(klant.Adres))
-            {
-                throw new DbKlantManagerException("DbKlantManager: Klant moet een naam en adres hebben");
-            }
-
-            SqlConnection connection = GetConnection();
-            string query = "INSERT INTO Klant (Naam, Adres) OUTPUT INSERTED.Id VALUES (@naam, @adres)";
-
-            using (SqlCommand command = connection.CreateCommand())
-            {
-                command.CommandText = query;
-                connection.Open();
-
-                try
-                {
-                    command.Parameters.Add(new SqlParameter("@naam", SqlDbType.NVarChar));
-                    command.Parameters.Add(new SqlParameter("@adres", SqlDbType.NVarChar));
-                    command.Parameters["@naam"].Value = klant.Naam;
-                    command.Parameters["@adres"].Value = klant.Adres;
-                    // Execute query and retrieve new identity Id for new Klant
-                    Int64 newKlantId = 0;
-                    var result = command.ExecuteScalar();
-                    if (result != null)
-                        newKlantId = (Int64)result;
-
-                    return newKlantId;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error: ${e.Message}");
-                    throw new DbKlantManagerException("DbKlantManager: Fout bij toevoegen van klant aan database");
-                }
-                finally
-                {
-                    connection.Close();
-                }
+                throw new DbKlantManagerException("DbKlantManager: Fout bij het verwijderen van Klant uit database");
             }
         }
     }

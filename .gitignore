@@ -5,6 +5,7 @@
 
 # Own addition
 App.config
+/Migrations
 
 # User-specific files
 *.rsuser

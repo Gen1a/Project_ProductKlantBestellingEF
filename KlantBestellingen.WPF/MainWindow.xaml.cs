@@ -1,26 +1,11 @@
 ﻿using BusinessLayer.Models;
-using BusinessLayer.Managers;
-using System.Configuration;
 using KlantBestellingen.WPF.Languages;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.Globalization;
-using System.ComponentModel;
-using System.Threading;
-using System.Windows.Markup;
 
 namespace KlantBestellingen.WPF
 {
@@ -51,6 +36,10 @@ namespace KlantBestellingen.WPF
             // Hide statusbar information
             SetStatusbarVisibility(true);
             DisableButton(BtnNewOrder);
+            // Set OrderDetailWindow Reference for Products
+            _productsWindow.OrderDetailWindow = _orderDetailWindow;
+            _orderDetailWindow.Orders = _ordersWindow;
+            _customerWindow.MainWindow = this;
         }
 
         public OrderDetail OrderDetail
@@ -180,10 +169,10 @@ namespace KlantBestellingen.WPF
         {
             // Indien klant selectie in combobox wijzigt, refresh datagrid
             SetStatusbarVisibility(true);
-            Refresh();
+            Refresh(sender, e);
         }
 
-        public void Refresh()
+        public void Refresh(object sender, EventArgs e)
         {
             // Indien klant geselecteerd
             if (cbKlanten.SelectedItem != null)
@@ -200,12 +189,19 @@ namespace KlantBestellingen.WPF
             }
         }
 
+        public void RefreshKlanten()
+        {
+            var klanten = Controller.KlantManager.HaalOp();
+            cbKlanten.ItemsSource = klanten;
+        }
+
         private void MaakBestelling_Click(object sender, RoutedEventArgs e)
         {
             if (cbKlanten.SelectedIndex >= 0)    // of cbKlanten.SelectedItem != null
             {
                 _orderDetailWindow.Klant = (Klant)cbKlanten.SelectedItem;
                 _orderDetailWindow.Bestelling = null;
+                _orderDetailWindow.MainWindow = this;
                 _orderDetailWindow.Show();
             }
         }
@@ -244,8 +240,7 @@ namespace KlantBestellingen.WPF
                 {
                     SetStatusbarVisibility(false);
                     Bestelling b = (Bestelling)dgOrderSelection.SelectedItem;
-                    DbProduct_BestellingManager pbm = new DbProduct_BestellingManager(ConfigurationManager.ConnectionStrings["HPZBook"].ConnectionString);
-                    IReadOnlyList<Product_Bestelling> productBestellingen = pbm.HaalOp(x => x.BestellingId == b.BestellingId);
+                    var productBestellingen = Controller.Product_BestellingManager.HaalOp(x => x.BestellingId == b.BestellingId);
 
                     int aantal = 0;
                     foreach (Product_Bestelling p in productBestellingen)
@@ -259,8 +254,8 @@ namespace KlantBestellingen.WPF
                     Console.WriteLine(ex.Message);
                     throw;
                 }
-                
-            } 
+
+            }
         }
 
         private void SetStatusbarVisibility(bool hide)

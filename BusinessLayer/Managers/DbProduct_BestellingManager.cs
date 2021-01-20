@@ -1,180 +1,101 @@
 ﻿using BusinessLayer.Exceptions;
 using BusinessLayer.Interfaces;
-using BusinessLayer.Models;
+using EntityFrameworkRepository;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
+using Product_BestellingBL = BusinessLayer.Models.Product_Bestelling;
+using Product_BestellingEF = EntityFrameworkRepository.Models.Product_Bestelling;
 
 namespace BusinessLayer.Managers
 {
-    public class DbProduct_BestellingManager
+    public class DbProduct_BestellingManager : IDbManager<Product_BestellingBL>
     {
-        private readonly string connectionString;
+        // Define repository instance which functions as a session which connects to the database
+        private readonly EntityFrameworkRepository<Product_BestellingEF> _repository = new EntityFrameworkRepository<Product_BestellingEF>();
+        // Needed to store the Bestelling objects which EF tracks
+        private Dictionary<(long, long), (Product_BestellingEF, Product_BestellingBL)> _mappedObjects = new Dictionary<(long, long), (Product_BestellingEF, Product_BestellingBL)>();
 
-        public DbProduct_BestellingManager(string connection)
+        public DbProduct_BestellingManager()
         {
-            if (string.IsNullOrEmpty(connection))
-            {
-                throw new DbProduct_BestellingManagerException("Fout bij het aanmaken van DbProduct_BestellingManager: connectionstring moet ingevuld zijn");
-            }
-            this.connectionString = connection;
+            HaalOp();
         }
 
-        private SqlConnection GetConnection()
+        public IReadOnlyList<Product_BestellingBL> HaalOp()
         {
-            SqlConnection connection;
-            try
+            var productBestellingen = new List<Product_BestellingBL>();
+            _mappedObjects = _repository.List().ToDictionary(pb => (pb.ProductId, pb.BestellingId), pb =>
+                (pb, new Product_BestellingBL(pb.ProductId, pb.BestellingId, pb.Aantal)));
+
+            foreach (var dbItem in _mappedObjects.Values)
             {
-                connection = new SqlConnection(connectionString);
+                dbItem.Item2.Aantal = dbItem.Item1.Aantal;
+                productBestellingen.Add(dbItem.Item2);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                throw new DbProduct_BestellingManagerException("Fout bij aanmaken van connectie met databank: check connectiestring");
-            }
-            return connection;
+
+            return productBestellingen;
         }
 
-        public IReadOnlyList<Product_Bestelling> HaalOp()
+        public IReadOnlyList<Product_BestellingBL> HaalOp(Func<Product_BestellingBL, bool> predicate)
         {
-            SqlConnection connection = GetConnection();
-            string query = "SELECT * FROM Product_Bestelling";
+            if (_mappedObjects.Count == 0)
+                HaalOp();
 
-            using (SqlCommand command = connection.CreateCommand())
+            var productBestellingen = new List<Product_BestellingBL>();
+            foreach (var dbItem in _mappedObjects.Values)
             {
-                command.CommandText = query;
-                connection.Open();
-
-                try
-                {
-                    SqlDataReader reader = command.ExecuteReader();
-                    List<Product_Bestelling> product_bestellingen = new List<Product_Bestelling>();
-                    while (reader.Read())
-                    {
-                        product_bestellingen.Add(new Product_Bestelling((long)reader["productId"], (long)reader["bestellingId"], (int)reader["aantal"]));
-                    }
-                    reader.Close();
-                    return product_bestellingen;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error: ${e.Message}");
-                    throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Fout bij ophalen van Product_Bestelling uit database");
-                }
-                finally
-                {
-                    connection.Close();
-                }
+                dbItem.Item2.Aantal = dbItem.Item1.Aantal;
+                productBestellingen.Add(dbItem.Item2);
             }
-        }
-
-        public IReadOnlyList<Product_Bestelling> HaalOp(Func<Product_Bestelling, bool> predicate)
-        {
-            List<Product_Bestelling> product_bestellingen = (List<Product_Bestelling>)HaalOp();
-            var selection = product_bestellingen.Where<Product_Bestelling>(predicate).ToList();
+            var selection = productBestellingen.Where<Product_BestellingBL>(predicate).ToList();
 
             return selection;
         }
 
-        public void Verwijder(Product_Bestelling item)
+        public long VoegToe(Product_BestellingBL productBestelling)
         {
-            if (item == null) throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Product_Bestelling mag niet null zijn");
-            if (item.ProductId <= 0 || item.BestellingId <= 0) throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Te verwijderen Product_Bestelling heeft een invalide Id");
-
-            SqlConnection connection = GetConnection();
-            string query = "DELETE FROM Product_Bestelling WHERE productId=@productId AND bestellingId=@bestellingId";
-
-            using (SqlCommand command = connection.CreateCommand())
+            var pbEF = new Product_BestellingEF
             {
-                command.CommandText = query;
-                connection.Open();
+                ProductId = productBestelling.ProductId,
+                BestellingId = productBestelling.BestellingId,
+                Aantal = productBestelling.Aantal,
+            };
 
-                try
-                {
-                    command.Parameters.Add(new SqlParameter("@productId", SqlDbType.BigInt));
-                    command.Parameters.Add(new SqlParameter("@bestellingId", SqlDbType.BigInt));
-                    command.Parameters["@productId"].Value = item.ProductId;
-                    command.Parameters["@bestellingId"].Value = item.BestellingId;
-                    command.ExecuteNonQuery();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error: ${e.Message}");
-                    throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Fout bij verwijderen van Product_Bestelling uit database");
-                }
-                finally
-                {
-                    connection.Close();
-                }
+            _repository.Create(pbEF); // Create in _repository calls SaveChanges() and returns ID (long)
+            _mappedObjects[(productBestelling.ProductId, productBestelling.BestellingId)] = (pbEF, productBestelling);
+
+            return pbEF.Id;
+        }
+
+        public void Verwijder(Product_BestellingBL productBestelling)
+        {
+            try
+            {
+                _repository.Delete(_mappedObjects[(productBestelling.ProductId, productBestelling.BestellingId)].Item1);    // Delete in _repository also calls SaveChanges();
+                _mappedObjects.Remove((productBestelling.ProductId, productBestelling.BestellingId));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Fout bij het verwijderen van Product_Bestellingen uit database");
             }
         }
 
-        public void Verwijder(long bestellingId)
+        public Product_BestellingBL HaalOp(long id)
         {
-            if (bestellingId <= 0) throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Te verwijderen Product_Bestelling heeft een invalide Id");
-
-            SqlConnection connection = GetConnection();
-            string query = "DELETE FROM Product_Bestelling WHERE bestellingId=@bestellingId";
-
-            using (SqlCommand command = connection.CreateCommand())
-            {
-                command.CommandText = query;
-                connection.Open();
-
-                try
-                {
-                    command.Parameters.Add(new SqlParameter("@bestellingId", SqlDbType.BigInt));
-                    command.Parameters["@bestellingId"].Value = bestellingId;
-                    command.ExecuteNonQuery();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error: ${e.Message}");
-                    throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Fout bij verwijderen van Product_Bestelling uit database");
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
+            throw new NotImplementedException();
         }
 
-        public void VoegToe(Product_Bestelling item)
-        {
-            if (item == null) throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Product_Bestelling mag niet null zijn");
-            if (item.ProductId <= 0 || item.BestellingId <= 0) throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Product_Bestelling heeft een invalide Id");
-            if (item.Aantal <= 0) throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Aantal moet groter dan 0 zijn");
+        //public Product_BestellingBL HaalOp((long, long) tuple)
+        //{
+        //    // check if mappedObjects already contains Product_BestellingEF with this id
+        //    if (_mappedObjects.ContainsKey(tuple)) return _mappedObjects[tuple].Item2;
 
-            SqlConnection connection = GetConnection();
-            string query = "INSERT INTO Product_Bestelling (productId, bestellingId, aantal) VALUES (@productId, @bestellingId, @aantal)";
+        //    var pbEF = HaalOp(x => (x.ProductId == tuple.Item1) && (x.BestellingId == tuple.Item2)).FirstOrDefault();
+        //    _mappedObjects[tuple] = (pbEF, new Product_BestellingBL(pbEF.ProductId, pbEF.BestellingId, pbEF.Aantal));
 
-            using (SqlCommand command = connection.CreateCommand())
-            {
-                command.CommandText = query;
-                connection.Open();
-
-                try
-                {
-                    command.Parameters.Add(new SqlParameter("@productId", SqlDbType.BigInt));
-                    command.Parameters.Add(new SqlParameter("@bestellingId", SqlDbType.BigInt));
-                    command.Parameters.Add(new SqlParameter("@aantal", SqlDbType.Int));
-                    command.Parameters["@productId"].Value = item.ProductId;
-                    command.Parameters["@bestellingId"].Value = item.BestellingId;
-                    command.Parameters["@aantal"].Value = item.Aantal;
-                    command.ExecuteNonQuery();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error: ${e.Message}");
-                    throw new DbProduct_BestellingManagerException("DbProduct_BestellingManager: Fout bij toevoegen van Product_Bestelling aan database");
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-        }
+        //    return _mappedObjects[tuple].Item2;
+        //}
     }
 }

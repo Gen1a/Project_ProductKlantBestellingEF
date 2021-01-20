@@ -27,16 +27,19 @@ namespace BusinessLayer.Models
             Klant = klant;
         }
 
+        internal Bestelling(DateTime datum, Klant klant, long id) : this(datum, klant)
+        {
+            BestellingId = id;
+        }
+
         internal Bestelling(DateTime datum, Klant klant, Dictionary<Product, int> producten) : this(datum, klant)
         {
             if (producten == null) throw new BestellingException("Collectie producten mag niet leeg zijn");
             _producten = producten;
-            Klant = klant;
         }
 
         internal Bestelling(DateTime datum, Klant klant, Dictionary<Product, int> producten, long id) : this(datum, klant, producten)
         {
-            Klant = klant;
             BestellingId = id;
         }
         #endregion
@@ -95,8 +98,8 @@ namespace BusinessLayer.Models
             set
             {
                 _betaald = value;
-                if (value)
-                    PrijsBetaald = BerekenKostprijs();
+                //if (value)
+                //    PrijsBetaald = BerekenKostprijs();
                 NotifyPropertyChanged("Betaald");
             }
         }

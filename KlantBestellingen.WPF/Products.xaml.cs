@@ -1,5 +1,5 @@
-﻿using BusinessLayer.Models;
-using BusinessLayer.Factories;
+﻿using BusinessLayer.Factories;
+using BusinessLayer.Models;
 using KlantBestellingen.WPF.Languages;
 using System;
 using System.Collections.ObjectModel;
@@ -17,6 +17,18 @@ namespace KlantBestellingen.WPF
     public partial class Products : Window
     {
         private ObservableCollection<Product> _producten;
+
+        private OrderDetail _orderDetailWindow;
+        public OrderDetail OrderDetailWindow
+        {
+            get => _orderDetailWindow;
+            set
+            {
+                if (_orderDetailWindow == value)
+                    return;
+                _orderDetailWindow = value;
+            }
+        }
 
         public Products()
         {
@@ -46,9 +58,10 @@ namespace KlantBestellingen.WPF
             {
                 foreach (Product product in e.NewItems)
                 {
-                    product.ProductId = Controller.ProductManager.VoegToeEnGeefId(product);
+                    product.ProductId = Controller.ProductManager.VoegToe(product);
                 }
             }
+            OrderDetailWindow.RefreshProducts();
         }
 
         /// <summary>
@@ -61,7 +74,7 @@ namespace KlantBestellingen.WPF
             var grid = (DataGrid)sender;
             if (Key.Delete == e.Key)
             {
-                if (!(MessageBox.Show(Translations.DeleteConfirmation + "the selected product(s)?", Translations.Confirmation, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes))
+                if (!(MessageBox.Show(Translations.DeleteProduct, Translations.Confirmation, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes))
                 {
                     // Cancel delete and return
                     e.Handled = true;
@@ -104,8 +117,8 @@ namespace KlantBestellingen.WPF
                 return;
             }
 
-            // Add new Klant to ObservableCollection
-            // _klanten_CollectionChanged makes sure the changes also get pushed to BusinessLayer
+            // Add new Product to ObservableCollection
+            // _producten_CollectionChanged makes sure the changes also get pushed to BusinessLayer
             Product product = ProductFactory.MaakNieuwProduct(TbProductNaam.Text, Convert.ToDecimal(TbProductPrijs.Text), 0);
             _producten.Add(product);
 
@@ -117,7 +130,7 @@ namespace KlantBestellingen.WPF
 
         private void AllowNumbers(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^0-9.-]+");
+            Regex regex = new Regex("[^0-9.,-]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 
@@ -132,7 +145,7 @@ namespace KlantBestellingen.WPF
             string productNaam = p.Naam;
 
             // Ask confirmation for deleting a Product
-            if (!(MessageBox.Show($"{Translations.DeleteConfirmation}'{productNaam}'?", Translations.Confirmation, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes))
+            if (!(MessageBox.Show(Translations.DeleteProduct, Translations.Confirmation, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes))
             {
                 // Cancel delete and return
                 e.Handled = true;
